@@ -8,6 +8,7 @@
     background_normal: ''
     background_down:''
     background_color: Color_Button
+    text_size: self.width-sp(50), None
 #
 
 <CustomSwitch_Response@Switch>:
@@ -332,6 +333,8 @@
             CustomSwitch_Revers:
                 id: switch_revers0
                 #size_hint: 0.1,1
+                active: False
+                on_active: root.Switch_Order(self, self.active)
 
 
             ButtonRefresh:

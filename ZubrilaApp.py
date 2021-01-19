@@ -80,7 +80,6 @@ class Container (PageLayout):
 
     ############################################################
     # Обнавление кнопок с ответами
-
     def Refresh_Options(self):
 
         if self.DCS_logics.index_all_array_sentences:
@@ -196,7 +195,6 @@ class Container (PageLayout):
         self.Next_Word()
 
     # Показать вариант с кнопками
-
     def Show_Options_Response(self):
         # Скрыть поле ввода и кнопку
         self.boxLayout_keyboard.size_hint_y = 0.1
@@ -207,13 +205,24 @@ class Container (PageLayout):
         self.gridlayout_options_response.size_hint_y = 0.6
         self.gridlayout_options_response.opacity = 1
         self.Refresh_Options()
+   
+      
+        
+    def Switch_Order(self, switchOpj, switchValue):
+        i = 0
+        for x in self.DCS_logics.list_all_text:
+            self.DCS_logics.list_all_text[i]['1'],self.DCS_logics.list_all_text[i]['2']  = self.DCS_logics.list_all_text[i]['2'],self.DCS_logics.list_all_text[i]['1']
+            i+=1
+            
+
+
+
     ############################################################
 
     ############################################################
 
     ############################################################
     # Переключиться в Настройки из главной страницы
-
     def SwapSettings(self):
         # Сохраняем результат ответов
         self.DCS_logics.Save_Result()
@@ -258,7 +267,6 @@ class Container (PageLayout):
     ############################################################
 
     ############################################################
-
     def Selekt_Flag(self):
         if self.text_input_flag.text:
             self.selected_user_flag = []
@@ -284,7 +292,6 @@ class Container (PageLayout):
                 self.flag_list.text = res
 
     # Добовляем флаг
-
     def Add_Flag(self):
         self.DCS_logics.Add_Flag(self.outputtextflag.text)
         self.DCS_logics.Restart_Data()
@@ -306,7 +313,6 @@ class Container (PageLayout):
 
     ############################################################
     # Показать новео слово
-
     def Next_Word(self):
 
         self.button_send.text = '^'
@@ -327,7 +333,6 @@ class Container (PageLayout):
             self.DCS_logics.Creating_Array_Sentences()
 
     # Проверка ответа пользователя
-
     def Verify_User_Response(self):
 
         if not self.trigger:
@@ -368,14 +373,13 @@ class Container (PageLayout):
         else:
             self.Next_Word()
     ############################################################
-
+    
 
 class ZubrilaApp (App):
     icon = r"ico/Zubrila_32_32.png"
-
     def build(self):
-        layout = Container()
-        return layout
+        self.layout = Container()
+        return self.layout
 
     # Zubrila
 
