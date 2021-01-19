@@ -213,7 +213,9 @@ class Container (PageLayout):
         for x in self.DCS_logics.list_all_text:
             self.DCS_logics.list_all_text[i]['1'],self.DCS_logics.list_all_text[i]['2']  = self.DCS_logics.list_all_text[i]['2'],self.DCS_logics.list_all_text[i]['1']
             i+=1
-            
+
+        self.DCS_logics.Save_Result()
+ 
 
 
 
