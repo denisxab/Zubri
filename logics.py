@@ -97,12 +97,13 @@ class CS_Remember_Logic():
             with open("add_word.txt", "w", encoding="utf-8") as add_word:
                 add_word.write(text_write)
             write_new = CS_Add_Word("add_word.txt")
+            write_new.Add_Word()
+            return True
 
-
-        return True if write_new.Add_Word() else False
-
+        return False
 
     # Обноавить данные
+
     def Restart_Data(self):
 
         #------------------------------------------------------------------------------#
@@ -158,13 +159,13 @@ class CS_Remember_Logic():
     # ------------------ Логика Флагов -------------------------------------
     # Отвечает какие флаги есть в базе
     def Respose_Flag(self):
-        # Сортировка 
+        # Сортировка
         res = [[x[0], x[1][0], x[1][1], round(x[1][2])] for x in self.flags]
-        res = sorted(res, key=lambda KLK: KLK[1],reverse = True)
+        res = sorted(res, key=lambda KLK: KLK[1], reverse=True)
         i = 0
         for x in res:
-            x.insert(0,i+1)
-            i+=1
+            x.insert(0, i+1)
+            i += 1
         return res
 
     # Запись индексов выбранных флагов
@@ -172,8 +173,6 @@ class CS_Remember_Logic():
         """
         Запись индексов выбранных флагов
         """
-
-
 
         # Провери выхода за пределы
         for x0 in list_flags:
