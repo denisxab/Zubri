@@ -1,33 +1,18 @@
-from random import choice, random
 from re import findall
+from random import randint
+from logics import CS_Remember_Logic
+from kivy.utils import get_color_from_hex
+from kivy.uix.pagelayout import PageLayout
+from kivy.properties import ObjectProperty
+from kivy.core.window import Window
 
 from kivy.app import App
 from kivy.config import Config
-from kivy.core.window import Window
-from kivy.properties import ObjectProperty
-from kivy.uix.pagelayout import PageLayout
-from kivy.utils import get_color_from_hex
-from kivy.uix.widget import Widget
-
-# from kivy.uix.boxlayout import BoxLayout
-# from kivy.uix.button import Button
-# from kivy.uix.label import Label
-# from kivy.uix.scrollview import ScrollView
-# from kivy.uix.switch import Switch
-# from kivy.uix.textinput import TextInput
 
 
-from logics import CS_Remember_Logic
-
-# Размер окна
-Window.size = (500, 700)
 # Потключение виртуальной клавиотуры
 Config.set("kivy", "keyboard_mode", "systemanddock")
 
-
-Color_Background = get_color_from_hex("#25567B")
-Color_Contant = get_color_from_hex("#3F92D2")
-Color_Button = Color_Contant
 
 # Операционная система
 # pc | phone
@@ -36,9 +21,16 @@ PLATFORM = 'pc'
 
 class Container (PageLayout):
 
+    Color_Background = get_color_from_hex("#0E5274")
+    Color_Contant = get_color_from_hex("#98AEBB")
+
+    Color_Duble = get_color_from_hex("#000000")
+    Color_Text_Inpyt = get_color_from_hex("#000000")
+    Color_Button = Color_Contant
+    Color_Background_Text_Inpyt = Color_Button
+
     # Логика
     DCS_logics = CS_Remember_Logic()
-
     ############################################################
     # Страница с вопросами
     pagemain = ObjectProperty()
@@ -92,6 +84,10 @@ class Container (PageLayout):
 
     switch_iput = ObjectProperty()
     switch_revers = ObjectProperty()
+
+    bolvanca_flag = ObjectProperty()
+    bolvanca_main = ObjectProperty()
+
     ############################################################
     # Обнавление кнопок с ответами
 
@@ -99,23 +95,12 @@ class Container (PageLayout):
 
         if self.DCS_logics.index_all_array_sentences:
 
-            chosen = self.DCS_logics.index_all_array_sentences[1::]
-
-            # Если осталься только один варианта ответа
-            if len(chosen) < 3:
-                b = self.DCS_logics.index_all_array_sentences[0]
-                chosen = [b, b, b]
-
-            a = [self.DCS_logics.index_all_array_sentences[0]]
-
-            i = 3
-            while i:
-                r = choice(chosen)
-                a.append(r)
-                chosen.remove(r)
-                i -= 1
-
-            a = sorted(a, key=lambda A: random())
+            m = max(self.DCS_logics.index_all_array_sentences)
+            a = []
+            for x in range(3):
+                a.append(randint(x, m))
+            a.insert(randint(0, 3),
+                     self.DCS_logics.index_all_array_sentences[0])
 
             self.optionsbutton_list = [
                 self.butt_send10, self.butt_send20, self.butt_send30, self.butt_send40]
@@ -132,7 +117,7 @@ class Container (PageLayout):
             self.trigger = 0
 
             for x in self.optionsbutton_list:
-                x.canvas.before.children[0].rgba = Color_Button
+                x.canvas.before.children[0].rgba = self.Color_Button
 
             if self.DCS_logics.index_all_array_sentences:
                 self.label_main.text = self.DCS_logics.list_all_text[
@@ -205,7 +190,7 @@ class Container (PageLayout):
     # Показать вариант с клавиотурой
     def Show_Keyboard_Response(self):
         # Показать поле ввода и кнопку
-        self.boxLayout_keyboard.size_hint_y = 1
+        self.boxLayout_keyboard.size_hint_y = 0.1
         self.boxLayout_keyboard.opacity = 1
         # Скрыть кнопки овтетов, они должны уменьшаться чтобы невылазить
         self.gridlayout_options_response.opacity = 0
@@ -225,12 +210,11 @@ class Container (PageLayout):
         self.gridlayout_options_response.opacity = 1
         self.Refresh_Options()
 
-    def Switch_Order(self,  switchValue):
-        i = 0
-        for x in self.DCS_logics.list_all_text:
+    def Switch_Order(self, switchValue):
+
+        for i in range(len(self.DCS_logics.list_all_text)):
             self.DCS_logics.list_all_text[i]['1'], self.DCS_logics.list_all_text[i][
                 '2'] = self.DCS_logics.list_all_text[i]['2'], self.DCS_logics.list_all_text[i]['1']
-            i += 1
 
         self.DCS_logics.Save_Result()
 
@@ -239,27 +223,40 @@ class Container (PageLayout):
     def Text_Input_Flag_on_focus(self, value):
         if PLATFORM == "phone":
             if value:
-                self.setttings.size_hint_y = 0.08
-                self.text_input_boxlayout.size_hint_y = 0.66
+                self.bolvanca_flag.size_hint_y = 0.5
+                self.setttings.size_hint_y = 0.1
+                self.text_input_boxlayout.size_hint_y = 0.1
                 self.boxlayout_options_buuton.size_hint_y = 0.3
 
             else:
+                self.bolvanca_flag.size_hint_y = None
+                self.bolvanca_flag.height = '0'
                 self.setttings.size_hint_y = 0.1
-                self.text_input_boxlayout.size_hint_y = 0.2
-                self.boxlayout_options_buuton.size_hint_y = 1
+                self.text_input_boxlayout.size_hint_y = 0.1
+                self.boxlayout_options_buuton.size_hint_y = 0.8
 
-    # Полнятие клавиатуры в на главной старанице
+        if not value and self.text_input_flag.text != '':
+            self.Selekt_Flag()
+
+            # Полнятие клавиатуры в на главной старанице
+
     def Text_Input_Response_on_focus(self, value):
         if PLATFORM == "phone":
             if value:
-                self.text_statistic_boxlayout.size_hint_y = 0.05
+                self.bolvanca_main.size_hint_y = 0.5
+                self.text_statistic_boxlayout.size_hint_y = 0.07
                 self.text_question_boxlayout.size_hint_y = 0.3
-                self.boxLayout_keyboard.size_hint_y = 0.66
+                self.boxLayout_keyboard.size_hint_y = 0.1
 
             else:
-                self.text_statistic_boxlayout.size_hint_y = 0.05
-                self.text_question_boxlayout.size_hint_y = 0.5
-                self.boxLayout_keyboard.size_hint_y = 0.4
+                self.bolvanca_main.size_hint_y = None
+                self.bolvanca_main.height = '0'
+                self.text_statistic_boxlayout.size_hint_y = 0.07
+                self.text_question_boxlayout.size_hint_y = 0.8
+                self.boxLayout_keyboard.size_hint_y = 0.1
+
+        if not value and self.textinput_main.text != '':
+            self.Verify_User_Response()
     ############################################################
 
     ############################################################
@@ -275,11 +272,8 @@ class Container (PageLayout):
     def SewapPagemain(self):
 
         # Если флаги не выбраны то не переходим на главную страницу
-        # !!!
         if not self.selected_user_flag:
-
-            self.button_sewap_pagemain.background_down = '.\ico\Qarrow_L.png'
-
+            self.button_sewap_pagemain.background_down = './ico/Qarrow_L.png'
             self.button_sewap_pagemain.canvas.before.children[0].rgba = get_color_from_hex(
                 "#D35E54")
             #self.button_sewap_pagemain.text = "X"
@@ -297,8 +291,8 @@ class Container (PageLayout):
         #!!! На сулачай если перейти из главного окна в настройки при вариативном ответе
         self.Refresh_Options()
         # Скидываем цвет кнопку в исходынй
-        self.button_sewap_pagemain.background_down = '.\ico\Qarrow_R.png'
-        self.button_sewap_pagemain.canvas.before.children[0].rgba = Color_Button
+        self.button_sewap_pagemain.background_down = './ico/Qarrow_R.png'
+        self.button_sewap_pagemain.canvas.before.children[0].rgba = self.Color_Button
         # Переключаемся на главный слой
         self.page = 0
 
@@ -345,7 +339,7 @@ class Container (PageLayout):
         if self.DCS_logics.Add_Flag(self.outputtextflag.text):
             self.DCS_logics.Restart_Data()
             self.outputtextflag.text = ''
-            self.save_flag.canvas.before.children[0].rgba = Color_Button
+            self.save_flag.canvas.before.children[0].rgba = self.Color_Button
             #self.save_flag.background_color = Color_Button
 
         else:
@@ -366,6 +360,7 @@ class Container (PageLayout):
                 x[0], x[1], x[2], x[3], x[4])
 
         self.flag_list.text = res
+        self.text_input_flag.focus = True
     ############################################################
 
     ############################################################
@@ -375,19 +370,18 @@ class Container (PageLayout):
         self.button_send.text = '^'
         self.textinput_main.text = ''
         self.trigger = 0
-        self.button_send.canvas.before.children[0].rgba = Color_Button
+        self.button_send.canvas.before.children[0].rgba = self.Color_Button
 
         if self.DCS_logics.index_all_array_sentences:
             self.label_main.text = self.DCS_logics.list_all_text[
                 self.DCS_logics.index_all_array_sentences[0]]["1"]
-            self.label_flag.text = "F({})     L({})".format(
+            self.label_flag.text = "{}: {}".format(
                 self.DCS_logics.list_all_text[self.DCS_logics.index_all_array_sentences[0]]["0"], self.DCS_logics.list_all_text[self.DCS_logics.index_all_array_sentences[0]]["4"])
-
-            # self.Refresh_Options()
 
         else:
             self.DCS_logics.Save_Result()
             self.DCS_logics.Creating_Array_Sentences()
+            self.Next_Word()
 
     # Проверка ответа пользователя
     def Verify_User_Response(self):
@@ -420,7 +414,9 @@ class Container (PageLayout):
                         # READ
                         self.button_send.canvas.before.children[0].rgba = get_color_from_hex(
                             "#D35E54")
-                    self.button_send.text = b["2"]
+
+                    self.label_main.text = '{}\n{}\n{}'.format(
+                        self.label_main.text, "- "*len(self.label_main.text), b['2'])
 
                 self.DCS_logics.index_all_array_sentences.pop(0)
                 self.trigger = 1
@@ -429,6 +425,7 @@ class Container (PageLayout):
                 self.Next_Word()
 
         else:
+            self.textinput_main.focus = True
             self.Next_Word()
     ############################################################
 
@@ -437,11 +434,17 @@ class ZubrilaApp (App):
     icon = r"ico/Zubrila_32_32.png"
 
     def build(self):
+        if PLATFORM == 'pc':
+            # Размер окна
+            Window.size = (500, 700)
+            Config.set('graphics', 'resizable', 0)
+            #Config.set('graphics', 'fullscreen', 'auto')
+            Config.set('kivy', 'exit_on_escape', 1)
+
         self.layout = Container()
         return self.layout
 
-    # Zubrila
 
-
+# Zubrila
 if __name__ == "__main__":
     ZubrilaApp().run()
