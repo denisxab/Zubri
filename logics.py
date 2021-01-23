@@ -2,9 +2,11 @@
 from re import findall
 from datetime import datetime
 from Add_Flags import CS_Add_Word
-
+from standart_flag import text_standart_flag
 
 # Чтение файла
+
+
 class CS_Smooth_Read_File:
     def __init__(self, name_file):
         super(CS_Smooth_Read_File, self).__init__()
@@ -32,9 +34,10 @@ class CS_Smooth_Read_File:
                     self.statis = False
                     return ''
         except FileNotFoundError:
+            r_all_word = text_standart_flag
             self.report = "{} None".format(name_file)
             self.statis = False
-            return ''
+            return r_all_word
 
 
 # Введение отчета

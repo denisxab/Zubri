@@ -1,4 +1,4 @@
-import ZubrilaApp
+from zub import zubApp
 
 if __name__ == "__main__":
-    ZubrilaApp.ZubrilaApp().run()
+    zubApp().run()
