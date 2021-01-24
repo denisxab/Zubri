@@ -379,7 +379,8 @@ BoxLayout:
     ToggleButton:
         background_color: Color_Contant
         text:"..."
-        font_size: '20sp'
+        font_size: '25sp'
+        color: Color_Text_Inpyt
         background_normal:''
         background_down:'./ico/green.png'
         on_state:app.layout.Selekt_Flag(app.layout,self)
@@ -472,7 +473,7 @@ BoxLayout:
     ############################################################
     # Показать новео слово
 
-    def Next_Word(self):
+    def Next_Word(self, recus=False):
 
         self.button_send.text = '^'
         self.textinput_main.text = ''
@@ -488,7 +489,8 @@ BoxLayout:
         else:
             self.DCS_logics.Save_Result()
             self.DCS_logics.Creating_Array_Sentences()
-            self.Next_Word()
+            if not recus:
+                self.Next_Word(True)
 
     # Проверка ответа пользователя
     def Verify_User_Response(self):
