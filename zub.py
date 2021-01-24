@@ -24,13 +24,17 @@ PLATFORM = 'pc'
 
 class Container (PageLayout):
 
-    Color_Background = get_color_from_hex("#0E5274")
+    Color_Background = get_color_from_hex("#1E4457")
     Color_Contant = get_color_from_hex("#98AEBB")
 
     Color_Duble = get_color_from_hex("#000000")
     Color_Text_Inpyt = get_color_from_hex("#000000")
     Color_Button = Color_Contant
     Color_Background_Text_Inpyt = Color_Button
+
+    Color_True = get_color_from_hex("#66D400")
+    Color_False = get_color_from_hex("#D35E54")
+    Color_Yellow = get_color_from_hex("#D3BD54")
 
     # Логика
     DCS_logics = CS_Remember_Logic()
@@ -139,7 +143,7 @@ class Container (PageLayout):
             if self.DCS_logics.index_all_array_sentences:
                 self.label_main.text = self.DCS_logics.list_all_text[
                     self.DCS_logics.index_all_array_sentences[0]]["1"]
-                self.label_flag.text = "F({})     L({})".format(
+                self.label_flag.text = "{}: {}".format(
                     self.DCS_logics.list_all_text[self.DCS_logics.index_all_array_sentences[0]]["0"], self.DCS_logics.list_all_text[self.DCS_logics.index_all_array_sentences[0]]["4"])
                 self.Refresh_Options()
 
@@ -158,10 +162,10 @@ class Container (PageLayout):
                 b = self.DCS_logics.list_all_text[self.DCS_logics.index_all_array_sentences[0]]
                 # Правильный овтет
                 if a == b["2"].lower().strip():
-                    b["4"] = str(int(b["4"]) + 1)
+                    if int(b["4"]) < 6:
+                        b["4"] = str(int(b["4"]) + 1)
                     # GREAN
-                    ids.canvas.before.children[0].rgba = get_color_from_hex(
-                        "#66D400")
+                    ids.canvas.before.children[0].rgba = self.Color_True
 
                 # Неправильынй ответ
                 else:
@@ -169,21 +173,18 @@ class Container (PageLayout):
                     if int(b["4"]) >= 3:
                         b["4"] = str(int(b["4"]) - 3)
                         # ELow
-                        ids.canvas.before.children[0].rgba = get_color_from_hex(
-                            "#D3BD54")
+                        ids.canvas.before.children[0].rgba = self.Color_Yellow
 
                     else:
                         b["4"] = str(int(b["4"]) - 1)
                         # READ
-                        ids.canvas.before.children[0].rgba = get_color_from_hex(
-                            "#D35E54")
+                        ids.canvas.before.children[0].rgba = self.Color_False
 
                     # Показать кнопку с верныйм ответом
 
                     for x in self.optionsbutton_list:
                         if x.text == b["2"]:
-                            x.canvas.before.children[0].rgba = get_color_from_hex(
-                                "#66D400")
+                            x.canvas.before.children[0].rgba = self.Color_True
 
                 self.DCS_logics.index_all_array_sentences.pop(0)
                 self.trigger = 1
@@ -287,8 +288,7 @@ class Container (PageLayout):
         # Если флаги не выбраны то не переходим на главную страницу
         if not self.selected_user_flag:
             self.button_sewap_pagemain.background_down = './ico/Qarrow_L.png'
-            self.button_sewap_pagemain.canvas.before.children[0].rgba = get_color_from_hex(
-                "#D35E54")
+            self.button_sewap_pagemain.canvas.before.children[0].rgba = self.Color_False
             # self.button_sewap_pagemain.text = "X"
             # self.button_sewap_pagemain.background_color = get_color_from_hex("#D35E54")
             return False
@@ -334,28 +334,33 @@ class Container (PageLayout):
                                                          self.out_flag_2.text)
             if self.DCS_logics.Add_Flag(outputtextflag):
                 self.DCS_logics.Restart_Data()
-                self.out_flag_0.text = ''
+                #self.out_flag_0.text = ''
                 self.out_flag_1.text = ''
                 self.out_flag_2.text = ''
-                self.save_flag.canvas.before.children[0].rgba = self.Color_Button
+                self.save_flag.canvas.before.children[0].rgba = self.Color_True
                 return True
+            else:
+                self.save_flag.canvas.before.children[0].rgba = self.Color_False
+                return False
 
-        self.save_flag.canvas.before.children[0].rgba = get_color_from_hex(
-            "#D35E54")
-        return False
+        else:
+            self.save_flag.canvas.before.children[0].rgba = self.Color_Button
+            return None
 
     ############################################################
     # Функция для записи флагов. <bind ToggleButton>
+
     def Selekt_Flag(self, box_l, but_t):
+
         # Записываем нажатые флаги в массив, для дальнейше обработки
         self.selected_user_flag = list(set(self.selected_user_flag))
+        a = findall(r'\d+\)+([^[]+)', but_t.text)[0].strip()
         if but_t.state == 'down':
-            self.selected_user_flag.append(self.DCS_logics.flags[int(
-                findall(r'(\d+)[)]', but_t.text)[0])-1][0])
-            return True
+            if a in [x[0]for x in self.DCS_logics.flags]:
+                self.selected_user_flag.append(a)
+                return True
 
-        self.selected_user_flag.remove(self.DCS_logics.flags[int(
-            findall(r'(\d+)[)]', but_t.text)[0])-1][0])
+        self.selected_user_flag.remove(a)
         return False
 
     # Обновить списко флагов
@@ -400,8 +405,7 @@ BoxLayout:
     def Swap_Left_List_Flag(self):
         # Ограничители передвижения
         if self.lenger_swap_flag-1 < 0:
-            self.left_swap_node.canvas.before.children[0].rgba = get_color_from_hex(
-                "#D35E54")
+            self.left_swap_node.canvas.before.children[0].rgba = self.Color_False
             return False
         # Обновление цвета у кнопок
         self.right_swap_node.canvas.before.children[0].rgba = self.Color_Button
@@ -436,8 +440,7 @@ BoxLayout:
     def Swap_Right_List_Flag(self):
         # Ограничители передвижения
         if self.lenger_swap_flag+1 > (int(self.len_flag_label.text)-1)//5:
-            self.right_swap_node.canvas.before.children[0].rgba = get_color_from_hex(
-                "#D35E54")
+            self.right_swap_node.canvas.before.children[0].rgba = self.Color_False
             return False
         # Обновление цвета у кнопок
         self.right_swap_node.canvas.before.children[0].rgba = self.Color_Button
@@ -503,11 +506,11 @@ BoxLayout:
                 b = self.DCS_logics.list_all_text[self.DCS_logics.index_all_array_sentences[0]]
                 # Правильный овтет
                 if a == b["2"].lower().strip():
-                    b["4"] = str(int(b["4"]) + 1)
+                    if int(b["4"]) < 6:
+                        b["4"] = str(int(b["4"]) + 1)
                     # GREAN
 
-                    self.button_send.canvas.before.children[0].rgba = get_color_from_hex(
-                        "#66D400")
+                    self.button_send.canvas.before.children[0].rgba = self.Color_True
 
                 # Неправильынй ответ
                 else:
@@ -515,14 +518,12 @@ BoxLayout:
                     if int(b["4"]) >= 3:
                         b["4"] = str(int(b["4"]) - 3)
                         # ELow
-                        self.button_send.canvas.before.children[0].rgba = get_color_from_hex(
-                            "#D3BD54")
+                        self.button_send.canvas.before.children[0].rgba = self.Color_Yellow
 
                     else:
                         b["4"] = str(int(b["4"]) - 1)
                         # READ
-                        self.button_send.canvas.before.children[0].rgba = get_color_from_hex(
-                            "#D35E54")
+                        self.button_send.canvas.before.children[0].rgba = self.Color_False
 
                     self.label_main.text = '{}\n{}\n{}'.format(
                         self.label_main.text, "- "*len(self.label_main.text), b['2'])

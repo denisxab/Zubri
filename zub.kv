@@ -1,6 +1,6 @@
 #:import hex kivy.utils.get_color_from_hex
 
-#:set  Color_Background hex("#0E5274")
+#:set  Color_Background hex("#1E4457")
 #:set  Color_Contant hex("#98AEBB")
 
 #:set  Color_Duble hex("#000000")
@@ -423,6 +423,7 @@
             padding:[5,5,5,5]
             spacing: 15
             BoxLayout:
+                size_hint: 1,0.3
                 canvas:
                     Color:
                         rgba: Color_Background_Text_Inpyt
@@ -436,6 +437,7 @@
                     hint_text: "Тема"
 
             BoxLayout:
+                size_hint: 1,0.3
                 canvas:
                     Color:
                         rgba: Color_Background_Text_Inpyt
@@ -449,6 +451,7 @@
                     hint_text: "Слово по Русски"
 
             BoxLayout:
+                size_hint: 1,0.3
                 canvas:
                     Color:
                         rgba: Color_Background_Text_Inpyt
@@ -459,4 +462,16 @@
                 MyTextInput:
                     id: out_flag_20
                     background_color: 0,0,0,0
-                    hint_text: "Слово по Английский"
+                    hint_text: "Слово по Английски"
+            Widget:
+            BoxLayout:
+                size_hint: 1,0.3
+                canvas:
+                    Color:
+                        rgba: Color_Background_Text_Inpyt
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [8,]#8
+                Image:
+                    source:"./ico/Zubrila_log.png"
