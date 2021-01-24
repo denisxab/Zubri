@@ -191,6 +191,7 @@
             BoxLayout:
                 id:text_statistic_boxlayout0
                 size_hint: 1,0.07#!!!
+                spacing:15
                 #
                 Label:
                     size_hint: 0.7,1
@@ -210,7 +211,17 @@
                     halign: "left"
                     padding: 15,5
                 #
-                Widget:
+                BoxLayout:
+                    canvas:
+                        Color:
+                            rgba: Color_Background_Text_Inpyt
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [8,]#8
+                    Image:
+                        source:"./ico/Zubri_log.png"
+
                 ButtonSettings:
                     id: button_settings0
                     #padding: [0,0,10,10]
@@ -474,4 +485,4 @@
                         size: self.size
                         radius: [8,]#8
                 Image:
-                    source:"./ico/Zubrila_log.png"
+                    source:"./ico/Zubri_log.png"
