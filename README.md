@@ -1,2 +1,2 @@
-# Zubrila
+# Zubri
 Memorizing words
