@@ -541,7 +541,7 @@ BoxLayout:
 
 
 class zubApp (App):
-    icon = r"ico/Zubrila_32_32.png"
+    icon = r"ico/Zubrila_ico.png"
 
     def build(self):
         if PLATFORM == 'pc':
