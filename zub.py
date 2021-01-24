@@ -1,15 +1,18 @@
-from re import findall
+from re import match, findall
 from random import randint
 from logics import CS_Remember_Logic
 from kivy.utils import get_color_from_hex
 from kivy.uix.pagelayout import PageLayout
 from kivy.properties import ObjectProperty
 from kivy.core.window import Window
-
+from kivy.lang import Builder
 from kivy.app import App
 from kivy.config import Config
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.togglebutton import ToggleButton
+from kivy.graphics import RoundedRectangle
 
-
+from kivy.graphics import RoundedRectangle, Color
 # Потключение виртуальной клавиотуры
 Config.set("kivy", "keyboard_mode", "systemanddock")
 
@@ -59,8 +62,6 @@ class Container (PageLayout):
     pagesatting = ObjectProperty()
     # Список флагов
     listFlag = ObjectProperty()
-    # Текстовое поля для ввода флагов
-    outputtextflag = ObjectProperty()
     # Флаги выбранные пользователем
     selected_user_flag = []
     # Массив со всеми флагами
@@ -69,8 +70,6 @@ class Container (PageLayout):
     button_sewap_pagemain = ObjectProperty()
     # Текстовое поля ввода индексов флага
     text_input_flag = ObjectProperty()
-    # Виджет - список флагов
-    flag_list = ObjectProperty()
     ############################################################
 
     text_input_boxlayout = ObjectProperty()
@@ -88,29 +87,47 @@ class Container (PageLayout):
     bolvanca_flag = ObjectProperty()
     bolvanca_main = ObjectProperty()
 
+    out_flag_0 = ObjectProperty()
+    out_flag_1 = ObjectProperty()
+    out_flag_2 = ObjectProperty()
+
+    left_swap_node = ObjectProperty()
+    len_flag_label = ObjectProperty()
+    right_swap_node = ObjectProperty()
+
+    сell_node = ObjectProperty()
+
+    # Для перемещения по флагам
+    lenger_swap_flag = 0
     ############################################################
     # Обнавление кнопок с ответами
 
     def Refresh_Options(self):
 
         if self.DCS_logics.index_all_array_sentences:
-
-            m = max(self.DCS_logics.index_all_array_sentences)
             a = []
-            for x in range(3):
-                a.append(randint(x, m))
-            a.insert(randint(0, 3),
-                     self.DCS_logics.index_all_array_sentences[0])
+            m = max(self.DCS_logics.index_all_array_sentences)
+            if m >= 3:
+                for x in range(3):
+                    a.append(randint(x, m))
+                a.insert(randint(0, 3),
+                         self.DCS_logics.index_all_array_sentences[0])
+
+            else:
+                a = [self.DCS_logics.index_all_array_sentences[0],
+                     self.DCS_logics.index_all_array_sentences[0],
+                     self.DCS_logics.index_all_array_sentences[0],
+                     self.DCS_logics.index_all_array_sentences[0]]
 
             self.optionsbutton_list = [
                 self.butt_send10, self.butt_send20, self.butt_send30, self.butt_send40]
-
             self.optionsbutton_list[0].text = self.DCS_logics.list_all_text[a[0]]["2"]
             self.optionsbutton_list[1].text = self.DCS_logics.list_all_text[a[1]]["2"]
             self.optionsbutton_list[2].text = self.DCS_logics.list_all_text[a[2]]["2"]
             self.optionsbutton_list[3].text = self.DCS_logics.list_all_text[a[3]]["2"]
 
     # Проверка отывета пользователя с кнопок
+
     def Verify_User_Options(self, text, ids):
         def New_sentence():
 
@@ -219,7 +236,7 @@ class Container (PageLayout):
         self.DCS_logics.Save_Result()
 
     ############################################################
-    # Полнятие клавиатуры в настройках
+    # Поднятие клавиатуры в настройках
     def Text_Input_Flag_on_focus(self, value):
         if PLATFORM == "phone":
             if value:
@@ -234,9 +251,6 @@ class Container (PageLayout):
                 self.setttings.size_hint_y = 0.1
                 self.text_input_boxlayout.size_hint_y = 0.1
                 self.boxlayout_options_buuton.size_hint_y = 0.8
-
-        if not value and self.text_input_flag.text != '':
-            self.Selekt_Flag()
 
             # Полнятие клавиатуры в на главной старанице
 
@@ -270,13 +284,12 @@ class Container (PageLayout):
 
     # Переключиться на главную страницу из настроики
     def SewapPagemain(self):
-
         # Если флаги не выбраны то не переходим на главную страницу
         if not self.selected_user_flag:
             self.button_sewap_pagemain.background_down = './ico/Qarrow_L.png'
             self.button_sewap_pagemain.canvas.before.children[0].rgba = get_color_from_hex(
                 "#D35E54")
-            #self.button_sewap_pagemain.text = "X"
+            # self.button_sewap_pagemain.text = "X"
             # self.button_sewap_pagemain.background_color = get_color_from_hex("#D35E54")
             return False
 
@@ -290,6 +303,7 @@ class Container (PageLayout):
 
         #!!! На сулачай если перейти из главного окна в настройки при вариативном ответе
         self.Refresh_Options()
+
         # Скидываем цвет кнопку в исходынй
         self.button_sewap_pagemain.background_down = './ico/Qarrow_R.png'
         self.button_sewap_pagemain.canvas.before.children[0].rgba = self.Color_Button
@@ -310,61 +324,154 @@ class Container (PageLayout):
     ############################################################
 
     ############################################################
-    def Selekt_Flag(self):
-        if self.text_input_flag.text:
-            self.selected_user_flag = []
-            a = findall(r"\d+", self.text_input_flag.text)
-            if a:
-                a = list(set(a))
-
-                for x in a:
-                    for i in self.list_flag_json:
-                        if int(x) == int(i[0]):
-                            self.selected_user_flag.append(i[1])
-
-                res = ''
-                st = ' '
-                for x in self.list_flag_json:
-                    st = ' '
-                    if str(x[0]) in a:
-                        st = '+'
-
-                    res += "{})  {}   [{} : {} : {}]  {}\n".format(
-                        x[0], x[1], x[2], x[3], x[4], st)
-
-                self.flag_list.text = res
-
     # Добовляем флаг
+
     def Add_Flag(self):
-        if self.DCS_logics.Add_Flag(self.outputtextflag.text):
-            self.DCS_logics.Restart_Data()
-            self.outputtextflag.text = ''
-            self.save_flag.canvas.before.children[0].rgba = self.Color_Button
-            #self.save_flag.background_color = Color_Button
 
-        else:
-            self.save_flag.canvas.before.children[0].rgba = get_color_from_hex(
-                "#D35E54")
-            # self.save_flag.background_color = get_color_from_hex("#D35E54")
+        if self.out_flag_0.text and self.out_flag_1.text and self.out_flag_2.text:
+            outputtextflag = '0:{}\n1:{}\n2:{}\n'.format(self.out_flag_0.text,
+                                                         self.out_flag_1.text,
+                                                         self.out_flag_2.text)
+            if self.DCS_logics.Add_Flag(outputtextflag):
+                self.DCS_logics.Restart_Data()
+                self.out_flag_0.text = ''
+                self.out_flag_1.text = ''
+                self.out_flag_2.text = ''
+                self.save_flag.canvas.before.children[0].rgba = self.Color_Button
+                return True
 
-            # Отображаем флаги
+        self.save_flag.canvas.before.children[0].rgba = get_color_from_hex(
+            "#D35E54")
+        return False
 
+    ############################################################
+    # Функция для записи флагов. <bind ToggleButton>
+    def Selekt_Flag(self, box_l, but_t):
+        # Записываем нажатые флаги в массив, для дальнейше обработки
+        self.selected_user_flag = list(set(self.selected_user_flag))
+        if but_t.state == 'down':
+            self.selected_user_flag.append(self.DCS_logics.flags[int(
+                findall(r'(\d+)[)]', but_t.text)[0])-1][0])
+            return True
+
+        self.selected_user_flag.remove(self.DCS_logics.flags[int(
+            findall(r'(\d+)[)]', but_t.text)[0])-1][0])
+        return False
+
+    # Обновить списко флагов
     def Manager_Flags(self) -> bool:
-        # Обновляем список флагов
+        # Получам флаги из базы
         self.DCS_logics.Restart_Data()
         self.list_flag_json = self.DCS_logics.Respose_Flag()
+        # Обновляем список флагов
+        self.boxlayout_options_buuton.clear_widgets()
+        self.boxlayout_options_buuton.canvas.before.children[0].rgba = self.Color_Background
+        # Обновление цвета у кнопок
+        self.right_swap_node.canvas.before.children[0].rgba = self.Color_Button
+        self.left_swap_node.canvas.before.children[0].rgba = self.Color_Button
+        # Максималья длинна флага
+        self.len_flag_label.text = str(len(self.list_flag_json))
+        self.lenger_swap_flag = 0
+        # Создаем таблицу
+        for x in self.list_flag_json[5*self.lenger_swap_flag:(5*self.lenger_swap_flag)+5:]:
+            self.w = Builder.load_string("""
+BoxLayout:
+    ToggleButton:
+        background_color: Color_Contant
+        text:"..."
+        font_size: '20sp'
+        background_normal:''
+        background_down:'./ico/green.png'
+        on_state:app.layout.Selekt_Flag(app.layout,self)
+            """)
 
-        res = ''
-        for x in self.list_flag_json:
-            res += "{})  {}   [{} : {} : {}]\n".format(
+            self.w.children[0].text = r"{})  {}   [{} : {} : {}]".format(
                 x[0], x[1], x[2], x[3], x[4])
 
-        self.flag_list.text = res
-        self.text_input_flag.focus = True
+            if self.DCS_logics.flags[int(
+                    findall(r'(\d+)[)]', self.w.children[0].text)[0])-1][0] in self.selected_user_flag:
+                self.w.children[0].state = 'down'
+
+            self.boxlayout_options_buuton.add_widget(self.w)
+    #
+    # Перелистунть список флагов влево
+
+    def Swap_Left_List_Flag(self):
+        # Ограничители передвижения
+        if self.lenger_swap_flag-1 < 0:
+            self.left_swap_node.canvas.before.children[0].rgba = get_color_from_hex(
+                "#D35E54")
+            return False
+        # Обновление цвета у кнопок
+        self.right_swap_node.canvas.before.children[0].rgba = self.Color_Button
+        self.left_swap_node.canvas.before.children[0].rgba = self.Color_Button
+        # готовим даннеы для записи
+        self.boxlayout_options_buuton.clear_widgets()
+        self.boxlayout_options_buuton.canvas.before.children[0].rgba = self.Color_Background
+        self.lenger_swap_flag -= 1
+        # Состовляем таблицу
+        for x in self.list_flag_json[5*self.lenger_swap_flag:(5*self.lenger_swap_flag)+5:]:
+            self.w = Builder.load_string("""
+BoxLayout:
+    ToggleButton:
+        background_color: Color_Contant
+        text:"..."
+        font_size: '20sp'
+        background_normal:''
+        background_down:'./ico/green.png'
+        on_state:app.layout.Selekt_Flag(app.layout,self)
+                """)
+            self.w.children[0].text = r"{})  {}   [{} : {} : {}]".format(
+                x[0], x[1], x[2], x[3], x[4])
+
+            if self.DCS_logics.flags[int(
+                    findall(r'(\d+)[)]', self.w.children[0].text)[0])-1][0] in self.selected_user_flag:
+                self.w.children[0].state = 'down'
+
+            self.boxlayout_options_buuton.add_widget(self.w)
+    #
+    # Перелистунть список флагов вправо
+
+    def Swap_Right_List_Flag(self):
+        # Ограничители передвижения
+        if self.lenger_swap_flag+1 > (int(self.len_flag_label.text)-1)//5:
+            self.right_swap_node.canvas.before.children[0].rgba = get_color_from_hex(
+                "#D35E54")
+            return False
+        # Обновление цвета у кнопок
+        self.right_swap_node.canvas.before.children[0].rgba = self.Color_Button
+        self.left_swap_node.canvas.before.children[0].rgba = self.Color_Button
+        # готовим даннеы для записи
+        self.boxlayout_options_buuton.clear_widgets()
+        self.boxlayout_options_buuton.canvas.before.children[0].rgba = self.Color_Background
+        self.lenger_swap_flag += 1
+        # Состовляем таблицу
+        for x in self.list_flag_json[5*self.lenger_swap_flag:(5*self.lenger_swap_flag)+5:]:
+            self.w = Builder.load_string("""
+BoxLayout:
+    ToggleButton:
+        background_color: Color_Contant
+        text:"..."
+        font_size: '20sp'
+        background_normal:''
+        background_down:'./ico/green.png'
+        on_state:app.layout.Selekt_Flag(app.layout,self)
+                """)
+            self.w.children[0].text = "{})  {}   [{} : {} : {}]".format(
+                x[0], x[1], x[2], x[3], x[4])
+
+            if self.DCS_logics.flags[int(
+                    findall(r'(\d+)[)]', self.w.children[0].text)[0])-1][0] in self.selected_user_flag:
+                self.w.children[0].state = 'down'
+
+            self.boxlayout_options_buuton.add_widget(self.w)
+        return True
+
     ############################################################
 
     ############################################################
     # Показать новео слово
+
     def Next_Word(self):
 
         self.button_send.text = '^'
@@ -438,7 +545,7 @@ class zubApp (App):
             # Размер окна
             Window.size = (500, 700)
             Config.set('graphics', 'resizable', 0)
-            #Config.set('graphics', 'fullscreen', 'auto')
+            # Config.set('graphics', 'fullscreen', 'auto')
             Config.set('kivy', 'exit_on_escape', 1)
 
         self.layout = Container()

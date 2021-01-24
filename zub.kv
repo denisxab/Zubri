@@ -134,7 +134,6 @@
     boxLayout_keyboard:boxLayout_keyboard0
     pagemain:pagemain
     pagesatting:pagesatting
-    outputtextflag:outputtextflag0
     label_flag:label_flag0
     button_sewap_pagemain:button_sewap_pagemain0
     butt_send10:butt_send1
@@ -142,16 +141,25 @@
     butt_send30:butt_send3
     butt_send40:butt_send4
     setttings:setttings0
-    response_flag:response_flag0
-    flag_list:flag_list0
-    text_input_flag:text_input_flag0
-    text_input_boxlayout: text_input_boxlayout0
+    #response_flag:response_flag0
+    #flag_list:flag_list0
+    #text_input_flag:text_input_flag0
+    #text_input_boxlayout: text_input_boxlayout0
     boxlayout_options_buuton:boxlayout_options_buuton0
     text_question_boxlayout:text_question_boxlayout0
     text_statistic_boxlayout:text_statistic_boxlayout0
     save_flag:save_flag0
-    bolvanca_flag:bolvanca_flag0
+    #bolvanca_flag:bolvanca_flag0
     bolvanca_main:bolvanca_main0
+    out_flag_0:out_flag_00
+    out_flag_1:out_flag_10
+    out_flag_2:out_flag_20
+
+
+    left_swap_node:left_swap_node0
+    len_flag_label:len_flag_label0
+    right_swap_node:right_swap_node0
+
     #
     border:0
     page:1
@@ -325,10 +333,13 @@
             #
             LOptinButton:
                 on_release: root.SewapWriteFlags()
+
         #
         BoxLayout:
             id: boxlayout_options_buuton0
-            ize_hint:1,0.8#!!!
+            orientation:"vertical"
+            size_hint:1,0.8#!!!
+            spacing:10
             canvas.before:
                 Color:
                     rgba: Color_Contant
@@ -336,55 +347,48 @@
                     pos: self.pos
                     size: self.size
                     radius: [10,]#8
-            #
-            ScrollView:
-                do_scroll_x: False
-                do_scroll_y: True
-                #
-                Label:
-                    id: flag_list0
-                    size_hint_y: None
-                    height: self.texture_size[1]
-                    text_size: self.width, None
-                    font_size: '25sp'
-                    padding: 10, 10
-                    color:hex("#000000")
-                    text:""
-        #
+
         BoxLayout:
-            size_hint:1,0.1#!!!
-            id: text_input_boxlayout0
-            spacing: 10
-            #
+            size_hint:1,0.1
+            spacing:5
+
+            OptinButton:
+                id:left_swap_node0
+                halign: 'center'
+                valign: 'center'
+                text_size: self.size
+                text:"<"
+                on_release:
+                    root.Swap_Left_List_Flag()
+
+
+
+
             BoxLayout:
-                canvas:
+                canvas.before:
                     Color:
-                        rgba: Color_Background_Text_Inpyt
+                        rgba: Color_Contant
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [8,]#8
-                #
-                MyTextInput:
-                    id: text_input_flag0
-                    background_color: 0,0,0,0
-                    focus: False
-                    on_focus: root.Text_Input_Flag_on_focus(self.focus)
-                    hint_text:'1, 2 ,3 ... n'
-            #
+                        radius: [10,]#8
+
+                Label:
+                    id:len_flag_label0
+                    text:"0"
+                    color: Color_Background
+                    font_size: '25sp'
+
             OptinButton:
-                size_hint:0.2,1
-                id: response_flag0
-                background_normal: './ico/Qplus.png'
-                background_down:'./ico/Qrefresh_teach_1.png'
-                border:(1,1,1,1)
-                background_color: hex('#668F00')
-                on_release: root.Selekt_Flag()
-        #
-        Widget:
-            id: bolvanca_flag0
-            height:'0'
-            size_hint_y:None
+                id:right_swap_node0
+                halign: 'center'
+                valign: 'center'
+                text_size: self.size
+                text:">"
+                on_release:
+                    root.Swap_Right_List_Flag()
+
+
     #
     BoxLayout:
         orientation: 'vertical'
@@ -405,28 +409,54 @@
                 size_hint: 0.2,1
                 color: hex("000000")
                 font_size: '25sp'
-                #text:"<"
                 on_release: root.Settings_SewapWriteFlags()
             #
             OptinButton:
                 id: save_flag0
                 size_hint: 1,1
-                #color: hex("000000")
                 font_size: '25sp'
-                text:"Save"
+                text:"Сохранить"
                 on_release: root.Add_Flag()
         #
         BoxLayout:
+            orientation: 'vertical'
             padding:[5,5,5,5]
-            canvas:
-                Color:
-                    rgba: Color_Background_Text_Inpyt
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [10,]#8
-            #
-            MyTextInput:
-                id: outputtextflag0
-                background_color: 0,0,0,0
-                hint_text: "(Add new Flag)\n0:Falg\n1:Text One\n2:Text Two\n~~~"
+            spacing: 15
+            BoxLayout:
+                canvas:
+                    Color:
+                        rgba: Color_Background_Text_Inpyt
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [8,]#8
+                MyTextInput:
+                    id: out_flag_00
+                    background_color: 0,0,0,0
+                    hint_text: "Тема"
+
+            BoxLayout:
+                canvas:
+                    Color:
+                        rgba: Color_Background_Text_Inpyt
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [8,]#8
+                MyTextInput:
+                    id: out_flag_10
+                    background_color: 0,0,0,0
+                    hint_text: "Слово по Русски"
+
+            BoxLayout:
+                canvas:
+                    Color:
+                        rgba: Color_Background_Text_Inpyt
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [8,]#8
+                MyTextInput:
+                    id: out_flag_20
+                    background_color: 0,0,0,0
+                    hint_text: "Слово по Английский"
