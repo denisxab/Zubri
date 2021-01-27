@@ -554,10 +554,10 @@ BoxLayout:
         # Состовляем таблицу
         for x in self.list_flag_json[5*self.lenger_swap_flag:(5*self.lenger_swap_flag)+5:]:
             self.w = self.__Сreate_Tabel()
-            self.w.children[0].text = r"{})  {}   [{} : {} : {}]".format(
+            self.w.children[1].text = r"{})  {}   [{} : {} : {}]".format(
                 x[0], x[1], x[2], x[3], x[4])
-            if self.DCS_logics.flags[int(findall(r'(\d+)[)]', self.w.children[0].text)[0])-1][0] in self.selected_user_flag:
-                self.w.children[0].state = 'down'
+            if self.DCS_logics.flags[int(findall(r'(\d+)[)]', self.w.children[1].text)[0])-1][0] in self.selected_user_flag:
+                self.w.children[1].state = 'down'
             self.boxlayout_options_buuton.add_widget(self.w)
     #
     # Перелистунть список флагов вправо
@@ -577,10 +577,10 @@ BoxLayout:
         # Состовляем таблицу
         for x in self.list_flag_json[5*self.lenger_swap_flag:(5*self.lenger_swap_flag)+5:]:
             self.w = self.__Сreate_Tabel()
-            self.w.children[0].text = "{})  {}   [{} : {} : {}]".format(
+            self.w.children[1].text = "{})  {}   [{} : {} : {}]".format(
                 x[0], x[1], x[2], x[3], x[4])
-            if self.DCS_logics.flags[int(findall(r'(\d+)[)]', self.w.children[0].text)[0])-1][0] in self.selected_user_flag:
-                self.w.children[0].state = 'down'
+            if self.DCS_logics.flags[int(findall(r'(\d+)[)]', self.w.children[1].text)[0])-1][0] in self.selected_user_flag:
+                self.w.children[1].state = 'down'
             self.boxlayout_options_buuton.add_widget(self.w)
 
     ############################################################
@@ -656,10 +656,10 @@ BoxLayout:
 
                     # Отчет об неправильном овтете
                     self.textinput_main.text = ''
-                    self.label_main.text = '{}\n{}\n{}\n{}\n{}\n{}%'.format(
+                    self.label_main.text = '{}\n{}\n{}\n{} - {}%'.format(
                         self.label_main.text, text_user,
-                        "- "*len(self.label_main.text),
-                        a, "- "*len(self.label_main.text),
+                        "- "*len(text_user),
+                        a,
                         self.Line_Similarities(text_user, a))
 
                 self.DCS_logics.index_all_array_sentences.pop(0)

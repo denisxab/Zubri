@@ -234,19 +234,14 @@
                     halign: "left"
                     padding: 15,5
                 #
-                BoxLayout:
-                    canvas:
-                        Color:
-                            rgba: Color_Background_Text_Inpyt
-                        RoundedRectangle:
-                            pos: self.pos
-                            size: self.size
-                            radius: [8,]#8
-                    Image:
-                        source:"./ico/Zubri_log.png"
+
+                Image:
+                    size_hint: 0.3,1
+                    source:"./ico/Zubri_log.png"
 
                 ButtonSettings:
                     id: button_settings0
+                    size_hint: 0.2,1
                     #padding: [0,0,10,10]
                     on_release:
                         root.SwapSettings()
@@ -516,17 +511,11 @@
 
             Widget:
 
-            BoxLayout:
+
+            Image:
                 size_hint: 1,0.3
-                canvas:
-                    Color:
-                        rgba: Color_Background_Text_Inpyt
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [8,]#8
-                Image:
-                    source:"./ico/Zubri_log.png"
+                source:"./ico/Zubri_log.png"
+                
 
     # PAGE 3
     BoxLayout:
