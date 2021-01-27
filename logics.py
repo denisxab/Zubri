@@ -135,14 +135,15 @@ class CS_Remember_Logic():
         # {'ALL_FLAG': [колличестов_флагов, сумма_всех_4_пунктов, уровень_зания_флага],'Флаг': [2, 7, 3.5]}
         flags = {}
         for x in range(0, len(self.list_all_text)):
-            if flags.setdefault(self.list_all_text[x]["0"]):
-                flags[self.list_all_text[x]["0"]][0] += 1
-                flags[self.list_all_text[x]["0"]
-                      ][1] += int(self.list_all_text[x]["4"])
-                flags[self.list_all_text[x]["0"]][2] += flags[self.list_all_text[x]
-                                                              ["0"]][1] / flags[self.list_all_text[x]["0"]][0]
+            flag_name = self.list_all_text[x]["0"]
+
+            if flags.setdefault(flag_name):
+                flags[flag_name][0] += 1
+                flags[flag_name][1] += int(self.list_all_text[x]["4"])
+                flags[flag_name][2] = round(
+                    (flags[flag_name][1] / flags[flag_name][0]) * 16.7, 1)
             else:
-                flags[self.list_all_text[x]["0"]] = [
+                flags[flag_name] = [
                     1, int(self.list_all_text[x]["4"]), float(self.list_all_text[x]["4"])/1]
 
         # Переписание <self.flags> в список для навигации по индексам

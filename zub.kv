@@ -20,8 +20,21 @@
     background_color: Color_Button
     background_down:'./ico/Qarrow_L.png'
     background_normal:'./ico/Qarrow_L.png'
-
 #
+
+<CButton@Button>:
+    background_color: 0,0,0,0
+    canvas.before:
+        Color:
+            rgba: Color_Background
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [8,8]#8
+
+    background_disabled_normal: ''
+    background_normal: ''
+    background_down:''
 #
 <ROptinButton@Button>:
     background_color: 0,0,0,0
@@ -141,15 +154,13 @@
     butt_send30:butt_send3
     butt_send40:butt_send4
     setttings:setttings0
-    #response_flag:response_flag0
-    #flag_list:flag_list0
-    #text_input_flag:text_input_flag0
-    #text_input_boxlayout: text_input_boxlayout0
+
+
     boxlayout_options_buuton:boxlayout_options_buuton0
     text_question_boxlayout:text_question_boxlayout0
     text_statistic_boxlayout:text_statistic_boxlayout0
     save_flag:save_flag0
-    #bolvanca_flag:bolvanca_flag0
+
     bolvanca_main:bolvanca_main0
     out_flag_0:out_flag_00
     out_flag_1:out_flag_10
@@ -160,11 +171,23 @@
     len_flag_label:len_flag_label0
     right_swap_node:right_swap_node0
 
+
+    imp_data_text:imp_data_text0
+    imp_data_buttun:imp_data_buttun0
+    output_data_text:output_data_text0
+    output_data_button:output_data_button0
+
+
+    edit_label_flag:edit_label_flag0
+    edit_text_flag:edit_text_flag0
+    button_save_edit_flag:button_save_edit_flag0
+    button_del_flag_edit:button_del_flag_edit0
     #
     border:0
+    #!!
     page:1
     anim_kwargs:{'d': .1, 't': 'in_quad'}
-    #
+    # PAGE 0
     BoxLayout:
         id:pagemain
         orientation: 'vertical'
@@ -252,6 +275,11 @@
                 size_hint:1, 0.1#!!!
                 spacing:10
                 #
+
+                Widget:
+                    size_hint: 0.001, 0.001
+
+
                 BoxLayout:
                     #padding:[5,5,5,5]
                     #spacing:1
@@ -276,7 +304,12 @@
                 OptinButton:
                     id: button_send0
                     size_hint: 0.1,1
-                    text:"^"
+                    text:"•"
+                    halign: 'center'
+                    valign: 'center'
+                    text_size: self.size
+                    font_size: "36sp"
+                    colr: Color_Background
                     on_release:
                         root.Verify_User_Response()
             #
@@ -309,7 +342,7 @@
                     id: butt_send4
                     text:"4"
                     on_release: root.Verify_User_Options(self.text,butt_send4)
-    #
+    # PAGE 1
     BoxLayout:
         id:pagesatting
         orientation: 'vertical'
@@ -369,6 +402,7 @@
                 valign: 'center'
                 text_size: self.size
                 text:"<"
+                opacity: 0
                 on_release:
                     root.Swap_Left_List_Flag()
 
@@ -396,11 +430,12 @@
                 valign: 'center'
                 text_size: self.size
                 text:">"
+                opacity: 0
                 on_release:
                     root.Swap_Right_List_Flag()
 
 
-    #
+    # PAGE 2
     BoxLayout:
         orientation: 'vertical'
         spacing:15
@@ -418,16 +453,20 @@
             #
             ROptinButton:
                 size_hint: 0.2,1
-                color: hex("000000")
-                font_size: '25sp'
                 on_release: root.Settings_SewapWriteFlags()
             #
             OptinButton:
                 id: save_flag0
                 size_hint: 1,1
                 font_size: '25sp'
-                text:"Сохранить"
+                text:"Добавить слова"
+                color: Color_Background
                 on_release: root.Add_Flag()
+            #
+            LOptinButton:
+                size_hint: 0.2,1
+                on_release: root.Impor_Swapig()
+
         #
         BoxLayout:
             orientation: 'vertical'
@@ -474,7 +513,9 @@
                     id: out_flag_20
                     background_color: 0,0,0,0
                     hint_text: "Слово по Английски"
+
             Widget:
+
             BoxLayout:
                 size_hint: 1,0.3
                 canvas:
@@ -486,3 +527,153 @@
                         radius: [8,]#8
                 Image:
                     source:"./ico/Zubri_log.png"
+
+    # PAGE 3
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [10,10,10,10]
+        spacing: 15
+        canvas.before:
+            Color:
+                rgba: Color_Background
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint: 1,0.07
+            spacing: 15
+            ROptinButton:
+                size_hint: 0.2,1
+                on_release: root.SewapWriteFlags()
+
+            BoxLayout:
+                canvas.before:
+                    Color:
+                        rgba: Color_Contant
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [8,]#8
+                Label:
+                    text:"Синхронизация базы"
+                    color: Color_Background
+                    font_size: '22sp'
+
+
+
+        BoxLayout:
+            size_hint: 1,0.3
+            canvas:
+                Color:
+                    rgba: Color_Background_Text_Inpyt
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [8,]#8
+            MyTextInput:
+                id: imp_data_text0
+                background_color: 0,0,0,0
+                multiline: True
+                hint_text: "Добавить данные в базу (input)\n1) Скопируйте базу слов на другом устройстве\n2) Вставте данные в это текстовое поле\n3) Нажмите (+)"
+            BoxLayout:
+                padding:[0,10,10,10]
+                size_hint:0.1,0.2
+                CButton:
+                    id: imp_data_buttun0
+                    text:"+"
+                    font_size:'35sp'
+                    halign: 'center'
+                    valign: 'center'
+                    text_size: self.size
+                    color:Color_Contant
+                    on_release: root.Set_Data_Flags()
+
+
+        BoxLayout:
+            size_hint: 1,0.3
+            canvas:
+                Color:
+                    rgba: Color_Background_Text_Inpyt
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [8,]#8
+            MyTextInput:
+                id: output_data_text0
+                background_color: 0,0,0,0
+                multiline: True
+                hint_text: "Копирывать базу слов(output)\n1) Выберете тему в настройках\n2) Нажмите (?) чтобы получить её копию"
+            BoxLayout:
+                padding:[0,10,10,10]
+                size_hint:0.1,0.2
+                CButton:
+                    id:output_data_button0
+                    text:"?"
+                    font_size:'35sp'
+                    halign: 'center'
+                    valign: 'center'
+                    text_size: self.size
+                    color:Color_Contant
+                    on_release: root.Copy_Data_Flags()
+    # PAGE 4
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [10,10,10,10]
+        spacing: 15
+        canvas.before:
+            Color:
+                rgba: Color_Background
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint: 1,0.1
+            canvas:
+                Color:
+                    rgba: Color_Background_Text_Inpyt
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [8,]#8
+            Label:
+                id: edit_label_flag0
+                color:Color_Text_Inpyt
+                font_size: '26sp'
+                size: self.texture_size
+
+
+        BoxLayout:
+            size_hint: 1,0.8
+            canvas:
+                Color:
+                    rgba: Color_Background_Text_Inpyt
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [8,]#8
+            MyTextInput:
+                id: edit_text_flag0
+                background_color: 0,0,0,0
+                multiline: True
+        BoxLayout:
+            size_hint: 1,0.1
+            spacing:15
+            OptinButton:
+                text:"Назад"
+                on_release:root.SwapSettings()
+            OptinButton:
+                id: button_save_edit_flag0
+                text:"Сохранить"
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+                on_release:root._Save_Edit_Flag()
+            OptinButton:
+                id: button_del_flag_edit0
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+                text:"Удалить"
+                on_release:root._Delit_Flag_Edit()

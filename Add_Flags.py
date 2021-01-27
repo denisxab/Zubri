@@ -76,7 +76,7 @@ class CS_Add_Word ():
                 # Провереям чтобы в <4:> пункте стояла цифра
                 elif "{0}{1}".format(i1[0], i1[1]) == "4:":
                     result.append(4)
-                    if not match(r"4:\s*\d+", i1):
+                    if not match(r"4:\s*[-\d]+", i1):
                         return False
 
                 # Провереям чтобы в <5:> стаяла дата типа 11.01.2021
