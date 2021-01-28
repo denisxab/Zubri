@@ -40,7 +40,7 @@ class CS_Add_Word ():
 
     def Document_Verification(self, r_add_word: str) -> bool:
         """
-        Проверка правильности заполения текстового документа <self.name_input_txt>
+        Проверка правильности заполнения текстового документа <self.name_input_txt>
         """
 
         # \d:\s*[^~]+ разделить по ~~~
@@ -85,8 +85,8 @@ class CS_Add_Word ():
                     if not match(r"5:\s*\d+\.\d+\.\d+ \d+:\d+", i1):
                         return False
 
-            # Если нарушен стиль записи то 1 и 2 пункта небудет. А это значит что был нарушен гдето стиль записи
-            # возможно поставлен неправильынй разделитель и предложение слились в одно.
+            # Если нарушен стиль записи то 1 и 2 пункта небудет. А это значит что был нарушен где-то стиль записи
+            # возможно поставлен неправильный разделитель и предложение слились в одно.
             # или ненаписали 1 и 2 пункт.
             if not 1 in result or not 2 in result:
                 return False
@@ -147,7 +147,7 @@ class CS_Add_Word ():
     # Добавление
     def Add_Word(self):
         """
-        Нужно проверить наличие слов в <self.name_input_txt> и проверить их заполнение через функцию Document_Verificatio(). Предпологаем что <self.name_input_txt> был заполнен зарание, а если он пустой то возвращем <False>. Если неправильно запонин <self.name_input_txt> (опрделяем это через <Document_Verification() == False>) то возвращаем <False>. Если правильно заполнен документ проверяем это через <Document_Verification() == True> то записываем (через функцию _Add_Word()()) в <all_word.txt> и возвращаем <True>.
+        Нужно проверить наличие слов в <self.name_input_txt> и проверить их заполнение через функцию Document_Verification(). Предпологаем что <self.name_input_txt> был заполнен зарание, а если он пустой то возвращаем <False>. Если неправильно запомним <self.name_input_txt> (определяем это через <Document_Verification() == False>) то возвращаем <False>. Если правильно заполнен документ проверяем это через <Document_Verification() == True> то записываем (через функцию _Add_Word()()) в <all_word.txt> и возвращаем <True>.
 
         В конце если запись успешна <_Add_Word()() == True> то отчистить <self.name_input_txt>
         """
@@ -165,7 +165,7 @@ class CS_Add_Word ():
             self.statis = False
             return False
 
-        # Отчиска <self.name_input_txt>
+        # Отчистка <self.name_input_txt>
         fcs = open('{}'.format(self.name_input_txt), 'w').close()
         return True
 

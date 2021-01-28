@@ -1,14 +1,14 @@
 #:import hex kivy.utils.get_color_from_hex
 
 #:set  Color_Background hex("#1E4457")
-#:set  Color_Contant hex("#98AEBB")
+#:set  Color_Content hex("#98AEBB")
 
-#:set  Color_Duble hex("#000000")
-#:set  Color_Text_Inpyt hex("#000000")
-#:set  Color_Button Color_Contant
-#:set  Color_Background_Text_Inpyt Color_Button
+#:set  Color_Double hex("#000000")
+#:set  Color_Text_Input hex("#000000")
+#:set  Color_Button Color_Content
+#:set  Color_Background_Text_Input Color_Button
 
-<LOptinButton@Button>:
+<LOptionButton@Button>:
     background_color: 0,0,0,0
     canvas.before:
         Color:
@@ -36,7 +36,7 @@
     background_normal: ''
     background_down:''
 #
-<ROptinButton@Button>:
+<ROptionButton@Button>:
     background_color: 0,0,0,0
     canvas.before:
         Color:
@@ -50,7 +50,7 @@
     background_normal:'./ico/Qarrow_R.png'
 #
 #
-<OptinButton@Button>:
+<OptionButton@Button>:
     background_color: 0,0,0,0
     canvas.before:
         Color:
@@ -60,7 +60,7 @@
             size: self.size
             radius: [8,]#8
     font_size: '20sp'
-    color: Color_Text_Inpyt
+    color: Color_Text_Input
     background_disabled_normal: ''
     background_normal: ''
     background_down:''
@@ -130,7 +130,7 @@
 #
 <MyTextInput@TextInput>:
     hint_text_color: Color_Background
-    foreground_color:Color_Text_Inpyt
+    foreground_color:Color_Text_Input
     font_size: '26sp'
     multiline: False
 #
@@ -138,30 +138,30 @@
 <Container>:
     id:rooot
     label_main:label_main0
-    textinput_main:textinput_main0
-    switch_iput:switch_iput0
+    text_input_main:text_input_main0
+    switch_input:switch_input0
     switch_revers: switch_revers0
     button_settings: button_settings0
     button_send:button_send0
     gridlayout_options_response:gridlayout_options_response0
-    boxLayout_keyboard:boxLayout_keyboard0
-    pagemain:pagemain
-    pagesatting:pagesatting
+    box_Layout_keyboard:box_Layout_keyboard0
+    page_main:page_main0
+    page_setting:page_setting0
     label_flag:label_flag0
-    button_sewap_pagemain:button_sewap_pagemain0
+    button_swap_page_main:button_swap_page_main0
     butt_send10:butt_send1
     butt_send20:butt_send2
     butt_send30:butt_send3
     butt_send40:butt_send4
-    setttings:setttings0
+    settings:setting0
 
 
-    boxlayout_options_buuton:boxlayout_options_buuton0
-    text_question_boxlayout:text_question_boxlayout0
-    text_statistic_boxlayout:text_statistic_boxlayout0
+    box_layout_options_button:box_layout_options_button0
+    text_question_box_layout:text_question_box_layout0
+    text_statistic_box_layout:text_statistic_box_layout0
     save_flag:save_flag0
 
-    bolvanca_main:bolvanca_main0
+    blank_main:blank_main0
     out_flag_0:out_flag_00
     out_flag_1:out_flag_10
     out_flag_2:out_flag_20
@@ -173,7 +173,7 @@
 
 
     imp_data_text:imp_data_text0
-    imp_data_buttun:imp_data_buttun0
+    imp_data_button:imp_data_button0
     output_data_text:output_data_text0
     output_data_button:output_data_button0
 
@@ -182,6 +182,10 @@
     edit_text_flag:edit_text_flag0
     button_save_edit_flag:button_save_edit_flag0
     button_del_flag_edit:button_del_flag_edit0
+
+
+    helper_user_button:helper_user_button0
+
     #
     border:0
     #!!
@@ -189,7 +193,7 @@
     anim_kwargs:{'d': .1, 't': 'in_quad'}
     # PAGE 0
     BoxLayout:
-        id:pagemain
+        id:page_main0
         orientation: 'vertical'
         padding: [10,10,10,10]
         spacing: 5
@@ -212,7 +216,7 @@
                     size: self.size
             #
             BoxLayout:
-                id:text_statistic_boxlayout0
+                id:text_statistic_box_layout0
                 size_hint: 1,0.07#!!!
                 spacing:15
                 #
@@ -220,7 +224,7 @@
                     size_hint: 0.7,1
                     canvas.before:
                         Color:
-                            rgba: Color_Contant
+                            rgba: Color_Content
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
@@ -244,28 +248,44 @@
                     size_hint: 0.2,1
                     #padding: [0,0,10,10]
                     on_release:
-                        root.SwapSettings()
+                        root.Swap_Settings()
             #
             BoxLayout:
-                id:text_question_boxlayout0
+                id:text_question_box_layout0
                 size_hint:1, 0.8#!!!
+                orientation: "vertical"
                 canvas.before:
                     Color:
-                        rgba: Color_Contant
+                        rgba: Color_Content
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
                         radius: [10,]#8
+
+                BoxLayout:
+                    size_hint:1,0.15
+                    padding:[10,10,10,10]
+                    Button:
+                        id:helper_user_button0
+                        size_hint:0.1,1
+                        background_normal:"./ico/help.png"
+                        background_down:"./ico/help_touch.png"
+                        border:(1, 1, 1, 1)
+                        on_release: root.Help_User_Main()
+                    Widget:
+
+
+
                 #
                 Label:
                     id: label_main0
                     text: "..."
-                    color:Color_Text_Inpyt
+                    color:Color_Text_Input
                     font_size: '26sp'
                     size: self.texture_size
             #
             BoxLayout:
-                id:boxLayout_keyboard0
+                id:box_Layout_keyboard0
                 orientation: 'horizontal'
                 size_hint:1, 0.1#!!!
                 spacing:10
@@ -280,14 +300,14 @@
                     #spacing:1
                     canvas:
                         Color:
-                            rgba: Color_Background_Text_Inpyt
+                            rgba: Color_Background_Text_Input
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
                             radius: [10,]#8
                     #
                     MyTextInput:
-                        id: textinput_main0
+                        id: text_input_main0
                         background_color: 0,0,0,0
                         focus: False
                         on_focus: root.Text_Input_Response_on_focus(self.focus)
@@ -296,7 +316,7 @@
                         padding_x:[self.center[0] - self._get_text_width(max(self._lines, key=len), self.tab_width, self._label_cached) / 2.0,0] if self.text else [self.center[0]-20, 0]
                         #padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
                 #
-                OptinButton:
+                OptionButton:
                     id: button_send0
                     size_hint: 0.1,1
                     text:"•"
@@ -309,7 +329,7 @@
                         root.Verify_User_Response()
             #
             Widget:
-                id: bolvanca_main0
+                id: blank_main0
                 height:'0'
                 size_hint_y:None
             #
@@ -321,25 +341,25 @@
                 size_hint_y: None
                 opacity:0
                 #
-                OptinButton:
+                OptionButton:
                     id: butt_send1
                     text:"1"
                     on_release: root.Verify_User_Options(self.text,butt_send1)
-                OptinButton:
+                OptionButton:
                     id: butt_send2
                     text:"2"
                     on_release: root.Verify_User_Options(self.text,butt_send2)
-                OptinButton:
+                OptionButton:
                     id: butt_send3
                     text:"3"
                     on_release: root.Verify_User_Options(self.text,butt_send3)
-                OptinButton:
+                OptionButton:
                     id: butt_send4
                     text:"4"
                     on_release: root.Verify_User_Options(self.text,butt_send4)
     # PAGE 1
     BoxLayout:
-        id:pagesatting
+        id:page_setting0
         orientation: 'vertical'
         padding: [10,10,10,10]
         spacing: 15
@@ -351,16 +371,16 @@
                 size: self.size
         #
         BoxLayout:
-            id:setttings0
+            id:setting0
             size_hint: 1,0.123#!!!
             spacing:10
             #
-            ROptinButton:
-                id:button_sewap_pagemain0
-                on_release: root.SewapPagemain()
+            ROptionButton:
+                id:button_swap_page_main0
+                on_release: root.Swap_Page_Main()
             #
             CustomSwitch_Response:
-                id: switch_iput0
+                id: switch_input0
                 on_state: root.Switch_Response_Method(self)
             #
             CustomSwitch_Revers:
@@ -370,18 +390,18 @@
             ButtonRefresh:
                 on_release: root.Manager_Flags()
             #
-            LOptinButton:
-                on_release: root.SewapWriteFlags()
+            LOptionButton:
+                on_release: root.Swap_Write_Flags()
 
         #
         BoxLayout:
-            id: boxlayout_options_buuton0
+            id: box_layout_options_button0
             orientation:"vertical"
             size_hint:1,0.8#!!!
             spacing:10
             canvas.before:
                 Color:
-                    rgba: Color_Contant
+                    rgba: Color_Content
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
@@ -391,7 +411,7 @@
             size_hint:1,0.1
             spacing:5
 
-            OptinButton:
+            OptionButton:
                 id:left_swap_node0
                 halign: 'center'
                 valign: 'center'
@@ -407,7 +427,7 @@
             BoxLayout:
                 canvas.before:
                     Color:
-                        rgba: Color_Contant
+                        rgba: Color_Content
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
@@ -419,7 +439,7 @@
                     color: Color_Background
                     font_size: '25sp'
 
-            OptinButton:
+            OptionButton:
                 id:right_swap_node0
                 halign: 'center'
                 valign: 'center'
@@ -446,11 +466,11 @@
             size_hint: 1,0.1
             spacing:10
             #
-            ROptinButton:
+            ROptionButton:
                 size_hint: 0.2,1
-                on_release: root.Settings_SewapWriteFlags()
+                on_release: root.Settings_SwapWriteFlags()
             #
-            OptinButton:
+            OptionButton:
                 id: save_flag0
                 size_hint: 1,1
                 font_size: '25sp'
@@ -458,9 +478,9 @@
                 color: Color_Background
                 on_release: root.Add_Flag()
             #
-            LOptinButton:
+            LOptionButton:
                 size_hint: 0.2,1
-                on_release: root.Impor_Swapig()
+                on_release: root.Import_Swapping()
 
         #
         BoxLayout:
@@ -471,7 +491,7 @@
                 size_hint: 1,0.3
                 canvas:
                     Color:
-                        rgba: Color_Background_Text_Inpyt
+                        rgba: Color_Background_Text_Input
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
@@ -485,7 +505,7 @@
                 size_hint: 1,0.3
                 canvas:
                     Color:
-                        rgba: Color_Background_Text_Inpyt
+                        rgba: Color_Background_Text_Input
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
@@ -499,7 +519,7 @@
                 size_hint: 1,0.3
                 canvas:
                     Color:
-                        rgba: Color_Background_Text_Inpyt
+                        rgba: Color_Background_Text_Input
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
@@ -515,7 +535,7 @@
             Image:
                 size_hint: 1,0.3
                 source:"./ico/Zubri_log.png"
-                
+
 
     # PAGE 3
     BoxLayout:
@@ -532,14 +552,14 @@
         BoxLayout:
             size_hint: 1,0.07
             spacing: 15
-            ROptinButton:
+            ROptionButton:
                 size_hint: 0.2,1
-                on_release: root.SewapWriteFlags()
+                on_release: root.Swap_Write_Flags()
 
             BoxLayout:
                 canvas.before:
                     Color:
-                        rgba: Color_Contant
+                        rgba: Color_Content
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
@@ -555,7 +575,7 @@
             size_hint: 1,0.3
             canvas:
                 Color:
-                    rgba: Color_Background_Text_Inpyt
+                    rgba: Color_Background_Text_Input
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
@@ -564,18 +584,18 @@
                 id: imp_data_text0
                 background_color: 0,0,0,0
                 multiline: True
-                hint_text: "Добавить данные в базу (input)\n1) Скопируйте базу слов на другом устройстве\n2) Вставте данные в это текстовое поле\n3) Нажмите (+)"
+                hint_text: "Добавить данные в базу (input)\n1) Скопируйте базу слов на другом устройстве\n2) Вставьте данные в это текстовое поле\n3) Нажмите (+)"
             BoxLayout:
                 padding:[0,10,10,10]
                 size_hint:0.1,0.2
                 CButton:
-                    id: imp_data_buttun0
+                    id: imp_data_button0
                     text:"+"
                     font_size:'35sp'
                     halign: 'center'
                     valign: 'center'
                     text_size: self.size
-                    color:Color_Contant
+                    color:Color_Content
                     on_release: root.Set_Data_Flags()
 
 
@@ -583,7 +603,7 @@
             size_hint: 1,0.3
             canvas:
                 Color:
-                    rgba: Color_Background_Text_Inpyt
+                    rgba: Color_Background_Text_Input
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
@@ -592,7 +612,7 @@
                 id: output_data_text0
                 background_color: 0,0,0,0
                 multiline: True
-                hint_text: "Копирывать базу слов(output)\n1) Выберете тему в настройках\n2) Нажмите (?) чтобы получить её копию"
+                hint_text: "Копировать базу слов(output)\n1) Выберете тему в настройках\n2) Нажмите (?) чтобы получить её копию"
             BoxLayout:
                 padding:[0,10,10,10]
                 size_hint:0.1,0.2
@@ -603,7 +623,7 @@
                     halign: 'center'
                     valign: 'center'
                     text_size: self.size
-                    color:Color_Contant
+                    color:Color_Content
                     on_release: root.Copy_Data_Flags()
     # PAGE 4
     BoxLayout:
@@ -621,14 +641,14 @@
             size_hint: 1,0.1
             canvas:
                 Color:
-                    rgba: Color_Background_Text_Inpyt
+                    rgba: Color_Background_Text_Input
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
                     radius: [8,]#8
             Label:
                 id: edit_label_flag0
-                color:Color_Text_Inpyt
+                color:Color_Text_Input
                 font_size: '26sp'
                 size: self.texture_size
 
@@ -637,7 +657,7 @@
             size_hint: 1,0.8
             canvas:
                 Color:
-                    rgba: Color_Background_Text_Inpyt
+                    rgba: Color_Background_Text_Input
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
@@ -649,20 +669,20 @@
         BoxLayout:
             size_hint: 1,0.1
             spacing:15
-            OptinButton:
+            OptionButton:
                 text:"Назад"
-                on_release:root.SwapSettings()
-            OptinButton:
+                on_release:root.Swap_Settings()
+            OptionButton:
                 id: button_save_edit_flag0
                 text:"Сохранить"
                 text_size: self.size
                 halign: 'center'
                 valign: 'center'
                 on_release:root._Save_Edit_Flag()
-            OptinButton:
+            OptionButton:
                 id: button_del_flag_edit0
                 text_size: self.size
                 halign: 'center'
                 valign: 'center'
                 text:"Удалить"
-                on_release:root._Delit_Flag_Edit()
+                on_release:root._Delete_Flag_Edit()
