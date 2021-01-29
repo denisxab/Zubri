@@ -178,13 +178,17 @@
     output_data_button:output_data_button0
 
 
-    edit_label_flag:edit_label_flag0
+    edit_text_input_flag:edit_text_input_flag0
     edit_text_flag:edit_text_flag0
     button_save_edit_flag:button_save_edit_flag0
     button_del_flag_edit:button_del_flag_edit0
 
 
     helper_user_button:helper_user_button0
+
+    rename_flag_button:rename_flag_button0
+    add_chosen_flag_button:add_chosen_flag_button0
+    box_helper:box_helper0
 
     #
     border:0
@@ -265,14 +269,25 @@
                 BoxLayout:
                     size_hint:1,0.15
                     padding:[10,10,10,10]
+                    id: box_helper0
                     Button:
                         id:helper_user_button0
                         size_hint:0.1,1
                         background_normal:"./ico/help.png"
                         background_down:"./ico/help_touch.png"
                         border:(1, 1, 1, 1)
-                        on_release: root.Help_User_Main()
+                        background_color: Color_Content
+                        on_release: root.Help_User_Main(False)
+
                     Widget:
+
+                    Button:
+                        id:add_chosen_flag_button0
+                        size_hint:0.1,1
+                        background_normal:"./ico/like.png"
+                        background_down:"./ico/like_touch.png"
+                        border:(1, 1, 1, 1)
+                        on_release: root.Add_Chosen_Flag()
 
 
 
@@ -613,6 +628,7 @@
                 background_color: 0,0,0,0
                 multiline: True
                 hint_text: "Копировать базу слов(output)\n1) Выберете тему в настройках\n2) Нажмите (?) чтобы получить её копию"
+
             BoxLayout:
                 padding:[0,10,10,10]
                 size_hint:0.1,0.2
@@ -639,18 +655,33 @@
 
         BoxLayout:
             size_hint: 1,0.1
-            canvas:
-                Color:
-                    rgba: Color_Background_Text_Input
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [8,]#8
-            Label:
-                id: edit_label_flag0
-                color:Color_Text_Input
-                font_size: '26sp'
-                size: self.texture_size
+            spacing: 15
+
+            BoxLayout:
+                canvas:
+                    Color:
+                        rgba: Color_Background_Text_Input
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [8,]#8
+
+                MyTextInput:
+                    id: edit_text_input_flag0
+                    background_color: 0,0,0,0
+                    font_size: '26sp'
+                    text_size: self.size
+                    halign: 'center'
+                    valign: 'bottom'
+
+            OptionButton:
+                id: rename_flag_button0
+                size_hint: 0.3,1
+                text:"Rename Flag"
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+                on_release: root._Rename_Flag(root.edit_text_input_flag.text)
 
 
         BoxLayout:
@@ -666,6 +697,7 @@
                 id: edit_text_flag0
                 background_color: 0,0,0,0
                 multiline: True
+
         BoxLayout:
             size_hint: 1,0.1
             spacing:15

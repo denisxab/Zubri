@@ -116,12 +116,19 @@ class Container (PageLayout):
     output_data_text = ObjectProperty()
     output_data_button = ObjectProperty()
 
-    edit_label_flag = ObjectProperty()
+    edit_text_input_flag = ObjectProperty()
     edit_text_flag = ObjectProperty()
     button_save_edit_flag = ObjectProperty()
     button_del_flag_edit = ObjectProperty()
 
     helper_user_button = ObjectProperty()
+
+    rename_flag_button = ObjectProperty()
+    # Переменная для хранения имени редактируемого флага
+    main_edit_flag = ''
+
+    add_chosen_flag_button = ObjectProperty()
+    box_helper = ObjectProperty()
     ############################################################
     # PAGE 0 Options Button
     # Обновление кнопок с ответами
@@ -153,14 +160,15 @@ class Container (PageLayout):
                                                                             ][self.text_display[1]]
             self.optionsbutton_list[3].text = self.DCS_logics.list_all_text[a[3]
                                                                             ][self.text_display[1]]
-
+    #
+    #
     # Проверка ответа пользователя с кнопок
 
     def Verify_User_Options(self, text, ids):
         def New_sentence():
 
             self.trigger = 0
-
+            self.add_chosen_flag_button.background_normal = "./ico/like.png"
             for x in self.optionsbutton_list:
                 x.canvas.before.children[0].rgba = self.Color_Button
 
@@ -218,17 +226,22 @@ class Container (PageLayout):
 
         else:
             New_sentence()
-
+    #
+    #
     # Функция переключения способа ответа
+
     def Switch_Response_Method(self, switchValue):
         # On 4 варианта ответ
         if switchValue.state == "down":
             self.Show_Options_Response()
         # Off ввод с клавиатуры
         else:
-            self.Show_Keyboard_Response()
 
+            self.Show_Keyboard_Response()
+    #
+    #
     # Показать вариант с клавиатуры
+
     def Show_Keyboard_Response(self):
         # Показать поле ввода и кнопку
         self.box_Layout_keyboard.size_hint_y = 0.1
@@ -238,9 +251,13 @@ class Container (PageLayout):
         self.gridlayout_options_response.opacity = 0
         self.gridlayout_options_response.size_hint_y = None
         self.gridlayout_options_response.height = '0'
+        # Корректировать размер бокса с добавление в изубранное
+        self.box_helper.size_hint_y = 0.15
         self.Next_Word()
-
+    #
+    #
     # Показать вариант с кнопками
+
     def Show_Options_Response(self):
         # Скрыть поле ввода и кнопку
         self.box_Layout_keyboard.size_hint_y = 0.1
@@ -251,20 +268,162 @@ class Container (PageLayout):
         self.text_statistic_box_layout.size_hint_y = 0.1
         self.gridlayout_options_response.size_hint_y = 0.6
         self.gridlayout_options_response.opacity = 1
+        # Корректировать размер бокса с добавление в изубранное
+        self.box_helper.size_hint_y = 0.3
         self.Refresh_Options()
 
+    #
+    #
     # Поменять порядок показа предложений
-    def Switch_Order(self, switchValue):
 
+    def Switch_Order(self, switchValue):
         if switchValue.state == 'down':
             self.text_display[0], self.text_display[1] = self.text_display[1], self.text_display[0]
             return True
         self.text_display[1], self.text_display[0] = self.text_display[0], self.text_display[1]
         return False
 
+        ############################################################
+
+    ############################################################
+    # PAGE 0 Keyboard
+    # Подсказка
+
+    def Help_User_Main(self, vis=0):
+        # На случай если пользователь захочет нажать подсказку когда уже есть ответ
+        if not self.trigger:
+            a = self.DCS_logics.list_all_text[self.DCS_logics.index_all_array_sentences[0]]
+            if not vis:
+                self.label_main.text = '{}\n{}'.format(
+                    a[self.text_display[0]],
+                    a[self.text_display[1]])
+            else:
+                self.label_main.text = a[self.text_display[0]]
+
+    #
+    #
+    # Добавить в избранные
+
+    def Add_Chosen_Flag(self):
+
+        self.add_chosen_flag_button.background_normal = "./ico/like_touch.png"
+        a = self.DCS_logics.list_all_text[self.DCS_logics.index_all_array_sentences[0]]
+
+        outputtextflag = '0:{}\n1:{}\n2:{}\n'.format(
+            "Избранное", a['1'], a['2'])
+        self.DCS_logics.Add_Flag(outputtextflag)
+
+        # Это костыль но так надежнее
+        tmp = self.DCS_logics.index_all_array_sentences
+        self.DCS_logics.Restart_Data()
+        self.DCS_logics.index_all_array_sentences = tmp
+
+    #
+    # Показать новые слово
+
+    def Next_Word(self, recuse=False):
+        # Текстовое поле дял ввода отчистить
+        self.text_input_main.text = ''
+        # Тригер в исходное
+        self.trigger = 0
+        # Картинку избранного в исходное
+        self.add_chosen_flag_button.background_normal = "./ico/like.png"
+        # Спрятать кнопку ответа
+        self.button_send.opacity = 0
+        self.button_send.size_hint = (0, 0)
+        self.button_send.height = '0'
+        # Цвет кнопки ответа в исходное
+        self.button_send.canvas.before.children[0].rgba = self.Color_Button
+
+        if self.DCS_logics.index_all_array_sentences:
+            a = self.DCS_logics.list_all_text[self.DCS_logics.index_all_array_sentences[0]]
+            self.label_main.text = a[self.text_display[0]]
+            self.label_flag.text = "{}: {}".format(a["0"], a["4"])
+
+            if int(a["4"]) < 1:
+                self.helper_user_button.background_normal = "./ico/help.png"
+                self.helper_user_button.background_down = "./ico/help_touch.png"
+                self.helper_user_button.on_release = lambda: self.Help_User_Main(
+                    False)
+
+            else:
+                self.helper_user_button.background_normal = ''
+                self.helper_user_button.background_down = ''
+                self.helper_user_button.on_release = lambda: self.Help_User_Main(
+                    True)
+
+        else:
+            self.DCS_logics.Save_Result()
+            self.DCS_logics.Creating_Array_Sentences()
+            if not recuse:
+                self.Next_Word(True)
+    #
+    #
+    # Проверка ответа пользователя
+
+    def Verify_User_Response(self):
+        # Сравнение сходства двух строчек
+        def Line_Similarities(str1, str2):
+            res = 0.0
+            max_similarities = 100/max([len(str1), len(str2)])
+            for x, y in zip(str1, str2):
+                if x == y:
+                    res += max_similarities
+            return int(round(res, 0))
+
+        if not self.trigger:
+            self.button_send.opacity = 1
+            self.button_send.size_hint = (0.1, 1)
+            # Если есть предложения показываем их, и удаляем первое
+            if self.DCS_logics.index_all_array_sentences:
+                a = self.text_input_main.text.lower().strip()
+                b = self.DCS_logics.list_all_text[self.DCS_logics.index_all_array_sentences[0]]
+                text_user = b[self.text_display[1]].lower().strip()
+                # Правильный ответ
+                if a == text_user:
+                    if int(b["4"]) < 6:
+                        b["4"] = str(int(b["4"]) + 1)
+                    # GREEN
+
+                    self.button_send.canvas.before.children[0].rgba = self.Color_True
+
+                # Неправильный ответ
+                else:
+                    # Штраф в 3 едениц
+                    if int(b["4"]) >= 3:
+                        b["4"] = str(int(b["4"]) - 3)
+                        # ELow
+                        self.button_send.canvas.before.children[0].rgba = self.Color_Yellow
+
+                    else:
+                        b["4"] = str(int(b["4"]) - 1)
+                        # READ
+                        self.button_send.canvas.before.children[0].rgba = self.Color_False
+
+                    # Отчет об неправильном ответ
+                    self.text_input_main.text = ''
+                    self.label_main.text = ''
+
+                    self.label_main.text = '{}\n{}\n{}\n{} - {}%'.format(
+                        b[self.text_display[0]], text_user,
+                        "- "*len(text_user), a,
+                        Line_Similarities(text_user, a))
+
+                self.DCS_logics.index_all_array_sentences.pop(0)
+                self.trigger = 1
+
+            else:
+                self.Next_Word()
+
+        else:
+            self.text_input_main.focus = True
+            self.Next_Word()
+    ############################################################
+
     ############################################################
     # Адаптация для телефонов
     # Поднятие клавиатуры в на главной старанице
+
     def Text_Input_Response_on_focus(self, value):
         if PLATFORM == "phone":
             if value:
@@ -297,8 +456,10 @@ class Container (PageLayout):
         self.DCS_logics.Save_Result()
         # Переключаемся в настройки
         self.page = 1
-
+    #
+    #
     # Переключиться на главную страницу из настройки
+
     def Swap_Page_Main(self):
         # Если флаги не выбраны то не переходим на главную страницу
         if not self.selected_user_flag:
@@ -317,6 +478,13 @@ class Container (PageLayout):
         #!!! На сулачай если перейти из главного окна в настройки при вариативном ответе
         self.Refresh_Options()
 
+        # Скрываем кнопку помощи
+        if self.switch_input.state == "down":
+            self.helper_user_button.background_normal = ''
+            self.helper_user_button.background_down = ''
+            self.helper_user_button.on_release = lambda: self.Help_User_Main(
+                True)
+
         # Скидываем цвет кнопку в исходный
         self.button_swap_page_main.background_down = './ico/Qarrow_R.png'
         self.button_swap_page_main.canvas.before.children[0].rgba = self.Color_Button
@@ -324,26 +492,32 @@ class Container (PageLayout):
         self.page = 0
 
         return True
-
+    #
+    #
     # Переключаемся на страницу добавление предложений из настройки
+
     def Swap_Write_Flags(self):
         #
         self.page = 2
-
+    #
+    #
     # Переключаемся на в настройки из добавления предложений
+
     def Settings_SwapWriteFlags(self):
         #
         self.page = 1
+    #
+    #
 
     def Import_Swapping(self):
         #
         self.page = 3
-
     ############################################################
 
     ############################################################
     # PAGE 2 Добавление новых слов
     # Добавляем флаг
+
     def Add_Flag(self):
 
         if self.out_flag_0.text and self.out_flag_1.text and self.out_flag_2.text:
@@ -364,6 +538,8 @@ class Container (PageLayout):
         else:
             self.save_flag.canvas.before.children[0].rgba = self.Color_Button
             return None
+    #
+    #
 
     def Copy_Data_Flags(self):
         if not self.selected_user_flag:
@@ -379,6 +555,8 @@ class Container (PageLayout):
         self.output_data_text.text = res
         self.output_data_text.hint_text = "Копирывать базу слов(output)\n1) Выберете тему в настройках\n2) Нажмите (?) чтобы получить её копию"
         return True
+    #
+    #
 
     def Set_Data_Flags(self):
         if self.DCS_logics.Add_Flag(self.imp_data_text.text):
@@ -389,10 +567,10 @@ class Container (PageLayout):
         else:
             self.imp_data_buttun.color = self.Color_False
             return False
-
     ############################################################
     # PAGE 1 Flags
     # Конструктор таблицы с флагами
+
     def __Create_Table(self):
         return Builder.load_string("""
 BoxLayout:
@@ -442,44 +620,62 @@ BoxLayout:
             font_size:'20sp'
             text:'§'
             on_release: app.layout._Setting_Flag(root.children[1])
-
             """)
+    #
+    #
+    # Переименовать флаг
 
+    def _Rename_Flag(self, text_flag: str):
+        for x in self.DCS_logics.list_all_text:
+            if x['0'] == self.main_edit_flag:
+                x['0'] = text_flag
+        self.Swap_Settings()
+        self.Manager_Flags()
+
+    #
+    #
     # Удаляем весе флаги
+
     def _Delete_Flag_Edit(self):
-        a = findall(r'\d+\)+([^[]+)', self.edit_label_flag.text)[0].strip()
         index = 0
         le = len(self.DCS_logics.list_all_text)
         while le > 0:
-            if self.DCS_logics.list_all_text[index]['0'] == a:
+            if self.DCS_logics.list_all_text[index]['0'] == self.main_edit_flag:
                 self.DCS_logics.list_all_text.pop(index)
                 index -= 1
             le -= 1
             index += 1
         self.DCS_logics.Save_Result()
         self.DCS_logics.Restart_Data()
-        self.Manager_Flags()
         self.Swap_Settings()
-
+        self.Manager_Flags()
+    #
+    #
     # Переход в настройки флага
+
     def _Setting_Flag(self, rto):
         # Кнопка удалить всегда красная
         self.button_del_flag_edit.canvas.before.children[0].rgba = self.Color_False
         # Восстанавливаем цвет у кнопки
         self.button_save_edit_flag.canvas.before.children[0].rgba = self.Color_Button
+        # Кнопка переименовать желтого цвета
+        self.rename_flag_button.canvas.before.children[0].rgba = self.Color_Yellow
+        # Переключиться на 4 страницу
         self.page = 4
         # Получаем текст флага
-        self.edit_label_flag.text = rto.text
-        # Преобразуем текст для поиска в базе по имени флага
-        a = findall(r'\d+\)+([^[]+)', rto.text)[0].strip()
+        self.main_edit_flag = findall(r'\d+\)+([^[]+)', rto.text)[0].strip()
+        # Записываем его в текстовое поле
+        self.edit_text_input_flag.text = self.main_edit_flag
         res = ''
         for x in self.DCS_logics.list_all_text:
-            if x["0"] == a:
+            if x["0"] == self.main_edit_flag:
                 res += "0: {}\n1: {}\n2: {}\n4: {}\n~~~\n".format(
                     x["0"], x["1"], x["2"], x["4"])
         self.edit_text_flag.text = res
-
+    #
+    #
     # Сохранить результат изменения флага
+
     def _Save_Edit_Flag(self):
         # Удаляем весе флаги
         self._Delete_Flag_Edit()
@@ -493,8 +689,10 @@ BoxLayout:
         else:
             self.button_save_edit_flag.canvas.before.children[0].rgba = self.Color_False
             return False
-
+    #
+    #
     # Функция для записи флагов. <bind ToggleButton>
+
     def _Select_Flag(self, but_t):
         # Записываем нажатые флаги в массив, для дальнейше обработки
         self.selected_user_flag = list(set(self.selected_user_flag))
@@ -507,8 +705,10 @@ BoxLayout:
         self.selected_user_flag.remove(a)
         but_t.canvas.before.children[0].rgba = self.Color_Button
         return False
-
+    #
+    #
     # Обновить список флагов
+
     def Manager_Flags(self) -> bool:
         # Получаем флаги из базы
         self.DCS_logics.Restart_Data()
@@ -539,8 +739,10 @@ BoxLayout:
             if self.DCS_logics.flags[int(findall(r'(\d+)[)]', self.w.children[1].text)[0])-1][0] in self.selected_user_flag:
                 self.w.children[1].state = 'down'
             self.box_layout_options_button.add_widget(self.w)
-
+    #
+    #
     # Перелистнуть список флагов влево
+
     def Swap_Left_List_Flag(self):
         # Ограничители передвижения
         if self.lenger_swap_flag-2 < 0:
@@ -561,6 +763,7 @@ BoxLayout:
             if self.DCS_logics.flags[int(findall(r'(\d+)[)]', self.w.children[1].text)[0])-1][0] in self.selected_user_flag:
                 self.w.children[1].state = 'down'
             self.box_layout_options_button.add_widget(self.w)
+    #
     #
     # Перелистнуть список флагов вправо
 
@@ -584,114 +787,6 @@ BoxLayout:
             if self.DCS_logics.flags[int(findall(r'(\d+)[)]', self.w.children[1].text)[0])-1][0] in self.selected_user_flag:
                 self.w.children[1].state = 'down'
             self.box_layout_options_button.add_widget(self.w)
-
-    ############################################################
-
-    ############################################################
-    # PAGE 0 Keyboard
-    # Показать новые слово
-
-    def Help_User_Main(self, vis=0):
-        a = self.DCS_logics.list_all_text[self.DCS_logics.index_all_array_sentences[0]]
-        if not vis:
-            self.label_main.text = '{}\n{}'.format(
-                a[self.text_display[0]],
-                a[self.text_display[1]])
-            return False
-
-        self.label_main.text = a[self.text_display[0]]
-        return True
-
-    def Next_Word(self, recuse=False):
-
-        self.text_input_main.text = ''
-        self.trigger = 0
-        self.button_send.canvas.before.children[0].rgba = self.Color_Button
-
-        self.button_send.opacity = 0
-        self.button_send.size_hint = (0, 0)
-        self.button_send.height = '0'
-
-        if self.DCS_logics.index_all_array_sentences:
-            a = self.DCS_logics.list_all_text[self.DCS_logics.index_all_array_sentences[0]]
-            self.label_main.text = a[self.text_display[0]]
-            self.label_flag.text = "{}: {}".format(a["0"], a["4"])
-
-            if int(a["4"]) < 1:
-                self.helper_user_button.opacity = 1
-                self.helper_user_button.size_hint = (0.15, 1)
-            else:
-                self.helper_user_button.opacity = 0
-                self.helper_user_button.size_hint = (0, 0)
-                self.helper_user_button.height = '0'
-
-        else:
-            self.DCS_logics.Save_Result()
-            self.DCS_logics.Creating_Array_Sentences()
-            if not recuse:
-                self.Next_Word(True)
-
-    # Сравнение сходства двух строчек
-    def Line_Similarities(self, str1, str2):
-        res = 0.0
-        max_similarities = 100/max([len(str1), len(str2)])
-        for x, y in zip(str1, str2):
-            if x == y:
-                res += max_similarities
-        return int(round(res, 0))
-
-    # Проверка ответа пользователя
-
-    def Verify_User_Response(self):
-
-        if not self.trigger:
-            self.button_send.opacity = 1
-            self.button_send.size_hint = (0.1, 1)
-            # Если есть предложения показываем их, и удаляем первое
-            if self.DCS_logics.index_all_array_sentences:
-                a = self.text_input_main.text.lower().strip()
-                b = self.DCS_logics.list_all_text[self.DCS_logics.index_all_array_sentences[0]]
-                text_user = b[self.text_display[1]].lower().strip()
-                # Правильный ответ
-                if a == text_user:
-                    if int(b["4"]) < 6:
-                        b["4"] = str(int(b["4"]) + 1)
-                    # GREEN
-
-                    self.button_send.canvas.before.children[0].rgba = self.Color_True
-
-                # Неправильный ответ
-                else:
-                    # Штраф в 3 едениц
-                    if int(b["4"]) >= 3:
-                        b["4"] = str(int(b["4"]) - 3)
-                        # ELow
-                        self.button_send.canvas.before.children[0].rgba = self.Color_Yellow
-
-                    else:
-                        b["4"] = str(int(b["4"]) - 1)
-                        # READ
-                        self.button_send.canvas.before.children[0].rgba = self.Color_False
-
-                    # Отчет об неправильном ответ
-                    self.text_input_main.text = ''
-                    self.label_main.text = ''
-
-                    self.label_main.text = '{}\n{}\n{}\n{} - {}%'.format(
-                        b[self.text_display[0]], text_user,
-                        "- "*len(text_user),
-                        a,
-                        self.Line_Similarities(text_user, a))
-
-                self.DCS_logics.index_all_array_sentences.pop(0)
-                self.trigger = 1
-
-            else:
-                self.Next_Word()
-
-        else:
-            self.text_input_main.focus = True
-            self.Next_Word()
     ############################################################
 
 
