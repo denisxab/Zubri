@@ -16,10 +16,9 @@ from kivy.graphics import RoundedRectangle, Color
 # Подключение виртуальной клавиатуры
 Config.set("kivy", "keyboard_mode", "systemanddock")
 
-
 # Операционная система
 # pc | phone
-PLATFORM = 'phone'
+PLATFORM = 'pc'
 
 
 class Container (PageLayout):
@@ -671,6 +670,58 @@ class Container (PageLayout):
         return False
     #
     #
+
+    def _Cerate_Table(self):
+        return Builder.load_string("""
+BoxLayout:
+    canvas.before:
+        Color:
+            rgba: Color_Content
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [8,]#8
+
+    ToggleButton:
+        canvas.before:
+            Color:
+                rgba: Color_Content
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [8,]#8
+        background_color: 0,0,0,0
+        text:'...'
+        text_size: self.size
+        halign: 'left'
+        valign: 'center'
+        padding_x: 15
+        font_size: '25sp'
+        color: Color_Text_Input
+        background_normal:''
+        background_down:'./ico/green.png'
+        on_state:app.layout._Select_Flag(self)
+
+    BoxLayout:
+        padding:[10,30,10,30]
+        orientation: 'vertical'
+        size_hint:0.1,1
+
+        Button:
+            canvas.before:
+                Color:
+                    rgba: Color_Background
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [8,]#8
+            background_color: 0,0,0,0
+            color: Color_Content
+            font_size:'20sp'
+            text:'§'
+            on_release: app.layout._Setting_Flag(root.children[1])
+        """)
+
     # Обновить список флагов
 
     def Manager_Flags(self) -> bool:
@@ -695,7 +746,7 @@ class Container (PageLayout):
             self.selected_user_flag = []
             # Создаем массив со всеми возможными кнопками
             for x in self.list_flag_json:
-                w = Builder.load_file('table.kv')
+                w = self._Cerate_Table()
                 w.children[1].text = r"{})  {}   [{} : {} : {}]".format(
                     x[0], x[1], x[2], x[3], x[4])
                 self.all_table.append(w)
@@ -711,7 +762,7 @@ class Container (PageLayout):
                        [0].strip() for x in self.all_table]
                 for x in self.list_flag_json:
                     if not x[1] in flg:
-                        w = Builder.load_file('table.kv')
+                        w = self._Cerate_Table()
                         w.children[1].text = r"{})  {}   [{} : {} : {}]".format(
                             x[0], x[1], x[2], x[3], x[4])
                         self.all_table.append(w)
