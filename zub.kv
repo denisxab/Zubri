@@ -79,7 +79,7 @@
     background_color: Color_Button
     background_down:'./ico/option.png'
     background_normal:'./ico/keyboard.png'
-    border:(0, 0, 0, 0)
+    border:(1, 1, 1, 1)
 #
 #
 <CustomSwitch_Revers@ToggleButton>:
@@ -296,7 +296,7 @@
                     id: label_main0
                     text: "..."
                     color:Color_Text_Input
-                    font_size: '26sp'
+                    font_size: '35sp'
                     size: self.texture_size
             #
             BoxLayout:
@@ -428,6 +428,8 @@
 
             OptionButton:
                 id:left_swap_node0
+                height:'0'
+                size_hint_y: None
                 halign: 'center'
                 valign: 'center'
                 text_size: self.size
@@ -456,6 +458,8 @@
 
             OptionButton:
                 id:right_swap_node0
+                height:'0'
+                size_hint_y: None
                 halign: 'center'
                 valign: 'center'
                 text_size: self.size
@@ -599,6 +603,7 @@
                 id: imp_data_text0
                 background_color: 0,0,0,0
                 multiline: True
+
                 hint_text: "Добавить данные в базу (input)\n1) Скопируйте базу слов на другом устройстве\n2) Вставьте данные в это текстовое поле\n3) Нажмите (+)"
             BoxLayout:
                 padding:[0,10,10,10]

@@ -35,6 +35,9 @@ class CS_Smooth_Read_File:
                     return ''
         except FileNotFoundError:
             r_all_word = text_standart_flag
+            with open(name_file, "w", encoding="utf-8") as all_word:
+                all_word.write(r_all_word)
+
             self.report = "{} None".format(name_file)
             self.statis = False
             return r_all_word
@@ -85,14 +88,14 @@ class CS_Remember_Logic():
         Сохранение результат работы <self.list_all_text> в базу <"all_word.txt">
         """
         i = 1
-        self.all_text = ''
+        all_text = ''
         for x in self.list_all_text:
-            self.all_text += "~{}~\n".format(i)
+            all_text += "~{}~\n".format(i)
             i += 1
             for x1 in range(6):
-                self.all_text += "{}:{}\n".format(x1, x[str(x1)])
+                all_text += "{}:{}\n".format(x1, x[str(x1)])
         with open("all_word.txt", "w", encoding="utf-8") as all_word:
-            all_word.write(self.all_text)
+            all_word.write(all_text)
 
     # Добавление слов
     def Add_Flag(self, text_write) -> bool:
@@ -110,14 +113,10 @@ class CS_Remember_Logic():
     def Restart_Data(self):
 
         #------------------------------------------------------------------------------#
-        # Весь текст <all_text.txt> в str
-        self.all_text = CS_Smooth_Read_File("all_word.txt").text
-        #------------------------------------------------------------------------------#
-
-        #------------------------------------------------------------------------------#
         # Запись текста в удобный массив
         self.list_all_text = []
-        re_all_text = findall(r"\d:\s*([^~\n]+)", self.all_text)
+        re_all_text = findall(
+            r"\d:\s*([^~\n]+)", CS_Smooth_Read_File("all_word.txt").text)
         for x in range(0, len(re_all_text), 6):
             self.list_all_text.append({
                 "0": re_all_text[x],
@@ -128,11 +127,47 @@ class CS_Remember_Logic():
                 "5": re_all_text[x+5]
             })
         del re_all_text
-        self.all_text = ''
+
+        # # Новая база
+        # self._data_all_text = {}
+        # re_all_text = findall(
+        #     r"\d:\s*([^~\n]+)", CS_Smooth_Read_File("all_word.txt").text)
+
+        # # Количество слов
+        # self.len_all_list = (len(re_all_text)/6)-1
+        # for x in range(0, len(re_all_text), 6):
+        #     if not self._data_all_text.get(re_all_text[x]):
+        #         self._data_all_text[re_all_text[x]] = []
+
+        #     self._data_all_text[re_all_text[x]].append((
+        #         re_all_text[x+1],
+        #         re_all_text[x+2],
+        #         re_all_text[x+3],
+        #         re_all_text[x+4],
+        #         re_all_text[x+5]))
+
         #------------------------------------------------------------------------------#
 
         #------------------------------------------------------------------------------#
         # Массив с именем флага и количество слов с такими флагам и процент знания
+
+        self.flags = self.Create_List_Flag()
+
+        #------------------------------------------------------------------------------#
+
+        #------------------------------------------------------------------------------#
+        # Выбранные пользователем флаги
+        self.selected_flags_user = []
+        #------------------------------------------------------------------------------#
+
+        #------------------------------------------------------------------------------#
+        # Список индексов всех предложений по выбранным флагам <self.selected_flags_user> после функции <Order_Display> сортируется
+        self.index_all_array_sentences = []
+    # ----------------------------------------------------------------
+
+    # ------------------ Логика Флагов -------------------------------------
+
+    def Create_List_Flag(self):
         # {'ALL_FLAG': [колличестов_флагов, сумма_всех_4_пунктов, уровень_знания_флага],'Флаг': [2, 7, 3.5]}
         flags = {}
         for x in range(0, len(self.list_all_text)):
@@ -148,22 +183,11 @@ class CS_Remember_Logic():
                     1, int(self.list_all_text[x]["4"]), float(self.list_all_text[x]["4"])/1]
 
         # Переписание <self.flags> в список для навигации по индексам
-        self.flags = [[x, flags[x]] for x in flags.keys()]
-        #------------------------------------------------------------------------------#
+        return [[x, flags[x]] for x in flags.keys()]
 
-        #------------------------------------------------------------------------------#
-        # Выбранные пользователем флаги
-        self.selected_flags_user = []
-        #------------------------------------------------------------------------------#
-
-        #------------------------------------------------------------------------------#
-        # Список индексов всех предложений по выбранным флагам <self.selected_flags_user> после функции <Order_Display> сортируется
-        self.index_all_array_sentences = []
-    # ----------------------------------------------------------------
-
-    # ------------------ Логика Флагов -------------------------------------
     # Отвечает какие флаги есть в базе
     def Respose_Flag(self):
+        self.flags = self.Create_List_Flag()
         # Сортировка
         res = [[x[0], x[1][0], x[1][1], round(x[1][2])] for x in self.flags]
         res = sorted(res, key=lambda KLK: KLK[1], reverse=True)

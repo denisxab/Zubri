@@ -1,0 +1,48 @@
+
+BoxLayout:
+    canvas.before:
+        Color:
+            rgba: Color_Content
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [8,]#8
+
+    ToggleButton:
+        canvas.before:
+            Color:
+                rgba: Color_Content
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [8,]#8
+        background_color: 0,0,0,0
+        text:'...'
+        text_size: self.size
+        halign: 'left'
+        valign: 'center'
+        padding_x: 15
+        font_size: '25sp'
+        color: Color_Text_Input
+        background_normal:''
+        background_down:'./ico/green.png'
+        on_state:app.layout._Select_Flag(self)
+
+    BoxLayout:
+        padding:[10,30,10,30]
+        orientation: 'vertical'
+        size_hint:0.1,1
+
+        Button:
+            canvas.before:
+                Color:
+                    rgba: Color_Background
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [8,]#8
+            background_color: 0,0,0,0
+            color: Color_Content
+            font_size:'20sp'
+            text:'§'
+            on_release: app.layout._Setting_Flag(root.children[1])

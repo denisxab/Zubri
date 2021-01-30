@@ -19,7 +19,7 @@ Config.set("kivy", "keyboard_mode", "systemanddock")
 
 # Операционная система
 # pc | phone
-PLATFORM = 'pc'
+PLATFORM = 'phone'
 
 
 class Container (PageLayout):
@@ -112,7 +112,7 @@ class Container (PageLayout):
     ############################################################
 
     imp_data_text = ObjectProperty()
-    imp_data_buttun = ObjectProperty()
+    imp_data_button = ObjectProperty()
     output_data_text = ObjectProperty()
     output_data_button = ObjectProperty()
 
@@ -129,6 +129,9 @@ class Container (PageLayout):
 
     add_chosen_flag_button = ObjectProperty()
     box_helper = ObjectProperty()
+
+    all_table = []
+
     ############################################################
     # PAGE 0 Options Button
     # Обновление кнопок с ответами
@@ -427,14 +430,18 @@ class Container (PageLayout):
     def Text_Input_Response_on_focus(self, value):
         if PLATFORM == "phone":
             if value:
-                self.blank_main.size_hint_y = 0.5
-                self.text_statistic_box_layout.size_hint_y = 0.07
+                self.blank_main.size_hint_y = 0.4
+
+                self.box_helper.size_hint_y = 0.45
+                self.text_statistic_box_layout.size_hint_y = 0.0625
                 self.text_question_box_layout.size_hint_y = 0.3
                 self.box_Layout_keyboard.size_hint_y = 0.1
 
             else:
                 self.blank_main.size_hint_y = None
                 self.blank_main.height = '0'
+
+                self.box_helper.size_hint_y = 0.15
                 self.text_statistic_box_layout.size_hint_y = 0.07
                 self.text_question_box_layout.size_hint_y = 0.8
                 self.box_Layout_keyboard.size_hint_y = 0.1
@@ -467,6 +474,7 @@ class Container (PageLayout):
             self.button_swap_page_main.canvas.before.children[0].rgba = self.Color_False
             return False
 
+        self.DCS_logics.Save_Result()
         # Конвертируем значения из таблицы
         self.DCS_logics.selected_flags_user = self.selected_user_flag
 
@@ -562,70 +570,18 @@ class Container (PageLayout):
         if self.DCS_logics.Add_Flag(self.imp_data_text.text):
             self.DCS_logics.Restart_Data()
             self.imp_data_text.text = ''
-            self.imp_data_buttun.color = self.Color_Content
+            self.imp_data_button.color = self.Color_Content
             return True
         else:
-            self.imp_data_buttun.color = self.Color_False
+            self.imp_data_button.color = self.Color_False
             return False
     ############################################################
     # PAGE 1 Flags
-    # Конструктор таблицы с флагами
-
-    def __Create_Table(self):
-        return Builder.load_string("""
-BoxLayout:
-    canvas.before:
-        Color:
-            rgba: Color_Content
-        RoundedRectangle:
-            pos: self.pos
-            size: self.size
-            radius: [8,]#8
-
-    ToggleButton:
-        canvas.before:
-            Color:
-                rgba: Color_Content
-            RoundedRectangle:
-                pos: self.pos
-                size: self.size
-                radius: [8,]#8
-        background_color: 0,0,0,0
-        text:"..."
-        text_size: self.size
-        halign: 'left'
-        valign: 'center'
-        padding_x: 15
-        font_size: '25sp'
-        color: Color_Text_Input
-        background_normal:''
-        background_down:'./ico/green.png'
-        on_state:app.layout._Select_Flag(self)
-
-    BoxLayout:
-        padding:[10,30,10,30]
-        orientation: 'vertical'
-        size_hint:0.1,1
-
-        Button:
-            canvas.before:
-                Color:
-                    rgba: Color_Background
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [8,]#8
-            background_color: 0,0,0,0
-            color: Color_Content
-            font_size:'20sp'
-            text:'§'
-            on_release: app.layout._Setting_Flag(root.children[1])
-            """)
-    #
     #
     # Переименовать флаг
 
     def _Rename_Flag(self, text_flag: str):
+
         for x in self.DCS_logics.list_all_text:
             if x['0'] == self.main_edit_flag:
                 x['0'] = text_flag
@@ -678,12 +634,20 @@ BoxLayout:
 
     def _Save_Edit_Flag(self):
         # Удаляем весе флаги
-        self._Delete_Flag_Edit()
+        index = 0
+        le = len(self.DCS_logics.list_all_text)
+        while le > 0:
+            if self.DCS_logics.list_all_text[index]['0'] == self.main_edit_flag:
+                self.DCS_logics.list_all_text.pop(index)
+                index -= 1
+            le -= 1
+            index += 1
+        self.DCS_logics.Save_Result()
 
         # Сохраняем измененные флаги и обновляем базу
         if self.DCS_logics.Add_Flag(self.edit_text_flag.text):
             self.DCS_logics.Restart_Data()
-            self.button_save_edit_flag.canvas.before.children[0].rgba = self.Color_True
+            self.Swap_Settings()
             self.Manager_Flags()
             return True
         else:
@@ -711,34 +675,64 @@ BoxLayout:
 
     def Manager_Flags(self) -> bool:
         # Получаем флаги из базы
-        self.DCS_logics.Restart_Data()
         self.list_flag_json = self.DCS_logics.Respose_Flag()
-        # Обновляем список флагов
-        self.box_layout_options_button.clear_widgets()
-        self.box_layout_options_button.canvas.before.children[0].rgba = self.Color_Background
-        # Обновление цвета у кнопок
-        self.right_swap_node.canvas.before.children[0].rgba = self.Color_Button
-        self.left_swap_node.canvas.before.children[0].rgba = self.Color_Button
         # Максималья длинна флага
         self.len_flag_label.text = str(len(self.list_flag_json))
-        # Отчищаем список выбранных кнопка
-        self.selected_user_flag = []
+        # Переменная с помощью которой определяем пределы
+        self.lenger_swap_flag = 0
+        # Отчистка поля с флагами
+        self.box_layout_options_button.clear_widgets()
+        self.box_layout_options_button.canvas.before.children[0].rgba = self.Color_Background
         # Если есть больше 5 элементов то показываем кнопку перемещения вправо
+        self.right_swap_node.opacity = 0
         self.left_swap_node.opacity = 0
         if len(self.list_flag_json) > 5:
             self.right_swap_node.opacity = 1
+            self.right_swap_node.size_hint_y = 1
 
-        # Переменная записывающая положения таблицы
-        self.lenger_swap_flag = 0
-        # Создаем таблицу
-        for x in self.list_flag_json[5*self.lenger_swap_flag:(5*self.lenger_swap_flag)+5:]:
-            self.w = self.__Create_Table()
-            self.w.children[1].text = r"{})  {}   [{} : {} : {}]".format(
-                x[0], x[1], x[2], x[3], x[4])
-            # Решаем проблему отображения выбранных флагов
-            if self.DCS_logics.flags[int(findall(r'(\d+)[)]', self.w.children[1].text)[0])-1][0] in self.selected_user_flag:
-                self.w.children[1].state = 'down'
-            self.box_layout_options_button.add_widget(self.w)
+        if not self.all_table:
+            # Отчищаем список выбранных кнопка
+            self.selected_user_flag = []
+            # Создаем массив со всеми возможными кнопками
+            for x in self.list_flag_json:
+                w = Builder.load_file('table.kv')
+                w.children[1].text = r"{})  {}   [{} : {} : {}]".format(
+                    x[0], x[1], x[2], x[3], x[4])
+                self.all_table.append(w)
+        else:
+            # Отчищаем список выбранных кнопка
+            for x in self.all_table:
+                x.children[1].state = 'normal'
+                x.canvas.before.children[0].rgba = self.Color_Button
+
+            # При добавление новых флагов
+            if len(self.all_table) < len(self.list_flag_json):
+                flg = [findall(r'\d+\)+([^[]+)', x.children[1].text)
+                       [0].strip() for x in self.all_table]
+                for x in self.list_flag_json:
+                    if not x[1] in flg:
+                        w = Builder.load_file('table.kv')
+                        w.children[1].text = r"{})  {}   [{} : {} : {}]".format(
+                            x[0], x[1], x[2], x[3], x[4])
+                        self.all_table.append(w)
+
+            # При удаление флага
+            elif len(self.all_table) > len(self.list_flag_json):
+                for x in self.all_table:
+                    if not findall(r'\d+\)+([^[]+)', x.children[1].text)[0].strip() in [x[1] for x in self.list_flag_json]:
+                        x.clear_widgets()
+                        self.all_table.remove(x)
+
+            # На случай если будут переименованны флаги
+            else:
+                for y, x in zip(self.all_table, self.list_flag_json):
+                    y.children[1].text = r"{})  {}   [{} : {} : {}]".format(
+                        x[0], x[1], x[2], x[3], x[4])
+
+        # Показываем первые 5 тем
+        for x in self.all_table[5*self.lenger_swap_flag:5*self.lenger_swap_flag+5:]:
+            self.box_layout_options_button.add_widget(x)
+
     #
     #
     # Перелистнуть список флагов влево
@@ -747,46 +741,48 @@ BoxLayout:
         # Ограничители передвижения
         if self.lenger_swap_flag-2 < 0:
             self.left_swap_node.opacity = 0
+            self.left_swap_node.size_hint_y = None
+            self.left_swap_node.height = '0'
+
         else:
             self.left_swap_node.opacity = 1
+            self.left_swap_node.size_hint_y = 1
 
         self.right_swap_node.opacity = 1
+        self.right_swap_node.size_hint_y = 1
         # готовим данные для записи
         self.box_layout_options_button.clear_widgets()
         self.box_layout_options_button.canvas.before.children[0].rgba = self.Color_Background
         self.lenger_swap_flag -= 1
-        # Составляем таблицу
-        for x in self.list_flag_json[5*self.lenger_swap_flag:(5*self.lenger_swap_flag)+5:]:
-            self.w = self.__Create_Table()
-            self.w.children[1].text = r"{})  {}   [{} : {} : {}]".format(
-                x[0], x[1], x[2], x[3], x[4])
-            if self.DCS_logics.flags[int(findall(r'(\d+)[)]', self.w.children[1].text)[0])-1][0] in self.selected_user_flag:
-                self.w.children[1].state = 'down'
-            self.box_layout_options_button.add_widget(self.w)
+
+        for x in self.all_table[5*self.lenger_swap_flag:5*self.lenger_swap_flag+5:]:
+            self.box_layout_options_button.add_widget(x)
+
     #
     #
     # Перелистнуть список флагов вправо
 
     def Swap_Right_List_Flag(self):
         # Ограничители передвижения
-        if self.lenger_swap_flag+2 > (int(self.len_flag_label.text)-1)//5:
+        if self.lenger_swap_flag+2 > (len(self.list_flag_json)-1)//5:
             self.right_swap_node.opacity = 0
+            self.right_swap_node.size_hint_y = None
+            self.right_swap_node.height = '0'
         else:
             self.right_swap_node.opacity = 1
+            self.right_swap_node.size_hint_y = 1
 
         self.left_swap_node.opacity = 1
+        self.left_swap_node.size_hint_y = 1
+
         # готовим данные для записи
         self.box_layout_options_button.clear_widgets()
         self.box_layout_options_button.canvas.before.children[0].rgba = self.Color_Background
         self.lenger_swap_flag += 1
-        # Составляем таблицу
-        for x in self.list_flag_json[5*self.lenger_swap_flag:(5*self.lenger_swap_flag)+5:]:
-            self.w = self.__Create_Table()
-            self.w.children[1].text = "{})  {}   [{} : {} : {}]".format(
-                x[0], x[1], x[2], x[3], x[4])
-            if self.DCS_logics.flags[int(findall(r'(\d+)[)]', self.w.children[1].text)[0])-1][0] in self.selected_user_flag:
-                self.w.children[1].state = 'down'
-            self.box_layout_options_button.add_widget(self.w)
+
+        for x in self.all_table[5*self.lenger_swap_flag:5*self.lenger_swap_flag+5:]:
+            self.box_layout_options_button.add_widget(x)
+
     ############################################################
 
 

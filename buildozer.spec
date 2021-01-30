@@ -1,7 +1,7 @@
 [app]
 
 # (str) Title of your application
-title = Zubrila
+title = Zubri
 
 # (str) Package name
 package.name = myapp
@@ -46,7 +46,7 @@ requirements = python3,kivy
 #presplash.filename = %(source.dir)s/data/presplash.png
 
 # (str) Icon of the application
-icon.filename = /ico/Zubri_ico.png
+icon.filename = ./ico/Zubri_ico.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
